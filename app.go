@@ -7,12 +7,15 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/justinas/alice"
 	"gopkg.in/validator.v2"
 )
 
 // App encapsulates Env, Router and middleware
 type App struct {
-	Router *mux.Router
+	Router      *mux.Router
+	Middlewares *Middleware
+	Config      *Env
 }
 
 type shortenReq struct {
@@ -25,16 +28,20 @@ type shortlinkResp struct {
 }
 
 // Initialize is initialization of app
-func (app *App) Initialize() {
+func (app *App) Initialize(env *Env) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	app.Config = env
 	app.Router = mux.NewRouter()
+	app.Middlewares = &Middleware{}
+
 	app.initializeRoutes()
 }
 
 func (app *App) initializeRoutes() {
-	app.Router.HandleFunc("/api/shorten", app.createShortlink).Methods("POST")
-	app.Router.HandleFunc("/api/info", app.getShortlinkInfo).Methods("GET")
-	app.Router.HandleFunc("/{shortlink:[a-zA-Z0-9]{1,11}}", app.redirect).Methods("GET")
+	m := alice.New(app.Middlewares.LoggingHandler, app.Middlewares.RecoverHabdler)
+	app.Router.Handle("/api/shorten", m.ThenFunc(app.createShortlink)).Methods("POST")
+	app.Router.Handle("/api/info", m.ThenFunc(app.getShortlinkInfo)).Methods("GET")
+	app.Router.Handle("/{shortlink:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods("GET")
 }
 
 func (app *App) createShortlink(w http.ResponseWriter, r *http.Request) {
@@ -49,20 +56,41 @@ func (app *App) createShortlink(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	fmt.Printf("create: %v\n", req)
+	// fmt.Printf("create: %v\n", req)
+	s, err := app.Config.S.Shorten(req.URL, req.ExpirationInMinutes)
+	if err != nil {
+		respondWithError(w, err)
+	} else {
+		respondWithJSON(w, http.StatusCreated, shortlinkResp{Shortlink: s})
+	}
 }
 
 func (app *App) getShortlinkInfo(w http.ResponseWriter, r *http.Request) {
 	vals := r.URL.Query()
 	s := vals.Get("shortlink")
-	fmt.Printf("get info: %s\n", s)
+
+	// fmt.Printf("get info: %s\n", s)
+	data, err := app.Config.S.ShortlinkInfo(s)
+	if err != nil {
+		respondWithError(w, err)
+	} else {
+		respondWithJSON(w, http.StatusOK, data)
+	}
 }
 
 func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	fmt.Printf("short link: %s\n", vars["shortlink"])
+
+	// fmt.Printf("short link: %s\n", vars["shortlink"])
+	unShortlink, err := app.Config.S.UnShorten(vars["shortlink"])
+	if err != nil {
+		respondWithError(w, err)
+	} else {
+		http.Redirect(w, r, unShortlink, http.StatusTemporaryRedirect)
+	}
 }
 
+// Run the app
 func (app *App) Run(addr string) {
 	log.Fatal(http.ListenAndServe(addr, app.Router))
 }
