@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -22,7 +23,7 @@ func (m Middleware) LoggingHandler(next http.Handler) http.Handler {
 }
 
 // RecoverHandler recover panic
-func (m Middleware) RecoverHabdler(next http.Handler) http.Handler {
+func (m Middleware) RecoverHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -31,6 +32,19 @@ func (m Middleware) RecoverHabdler(next http.Handler) http.Handler {
 			}
 		}()
 
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
+}
+
+// CorsHeadersHandler add headers for CORS Request
+func (m Middleware) CorsHeadersHandler(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		if strings.Index(r.URL.String(), "/api") == 0 {
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With")
+		}
 		next.ServeHTTP(w, r)
 	}
 
