@@ -54,7 +54,7 @@ func (r *RedisCli) Shorten(url string, exp int64) (string, error) {
 	// convert url to sha1 hash
 	h := toSha1(url)
 
-	// fetch if if the url is cacheed
+	// fetch if if the url is cached
 	data, err := r.Cli.Get(fmt.Sprintf(URLHashKey, h)).Result()
 	if err == redis.Nil {
 		// not exist, nothing to do
