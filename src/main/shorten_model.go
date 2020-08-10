@@ -5,8 +5,8 @@ type shortenReq struct {
 	ExpirationInMinutes int64  `json:"expiration_in_minutes" validate:"min=0"`
 }
 
-type shortlinkResp struct {
-	Shortlink string `json:"shortlink"`
-	Code      int    `json:"code"`
-	Message   string `json:"message"`
+type shortenResp struct {
+	ShortURL string `json:"shortURL"`
+	Code     int    `json:"code"`
+	Message  string `json:"message"`
 }

@@ -29,11 +29,11 @@ func (app *App) initializeRoutes() {
 	m := alice.New(app.Middlewares.LoggingHandler,
 		app.Middlewares.RecoverHandler,
 		app.Middlewares.CorsHeadersHandler)
-	app.Router.Handle("/api/shorten", m.ThenFunc(app.createShortlink)).Methods(http.MethodPost, http.MethodOptions)
-	app.Router.Handle("/api/info", m.ThenFunc(app.getShortlinkInfo)).Methods(http.MethodGet, http.MethodOptions)
+	app.Router.Handle("/api/shorten", m.ThenFunc(app.createShortURL)).Methods(http.MethodPost, http.MethodOptions)
+	app.Router.Handle("/api/info", m.ThenFunc(app.getShortURLInfo)).Methods(http.MethodGet, http.MethodOptions)
 	app.Router.Use(mux.CORSMethodMiddleware(app.Router))
 
-	app.Router.Handle("/{shortlink:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods(http.MethodGet)
+	app.Router.Handle("/{shorturl:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods(http.MethodGet)
 }
 
 // Run the app

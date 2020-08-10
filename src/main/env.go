@@ -33,8 +33,10 @@ func getEnv() *Env {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("connect to redis [addr: %s password: %s db: %d]", addr, passwd, db)
+	log.Printf("connect to redis [addr: %s password: %s db: %d]\n", addr, passwd, db)
 
 	r := NewRedisCli(addr, passwd, db)
-	return &Env{S: r, port: port}
+	return &Env{S: &Service{
+		R: *r,
+	}, port: port}
 }

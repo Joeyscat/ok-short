@@ -11,7 +11,7 @@ import (
 
 const SiteUrl = "iiu8.cn/"
 
-func (app *App) createShortlink(w http.ResponseWriter, r *http.Request) {
+func (app *App) createShortURL(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
 	}
@@ -31,16 +31,16 @@ func (app *App) createShortlink(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		respondWithJSON(w, http.StatusCreated, shortlinkResp{Shortlink: SiteUrl + s, Code: 2000, Message: "OK"})
+		respondWithJSON(w, http.StatusCreated, shortenResp{ShortURL: SiteUrl + s, Code: 2000, Message: "OK"})
 	}
 }
 
-func (app *App) getShortlinkInfo(w http.ResponseWriter, r *http.Request) {
-	vals := r.URL.Query()
-	s := vals.Get("shortlink")
+func (app *App) getShortURLInfo(w http.ResponseWriter, r *http.Request) {
+	values := r.URL.Query()
+	s := values.Get("shorturl")
 
 	// fmt.Printf("get info: %s\n", s)
-	data, err := app.Config.S.ShortlinkInfo(s)
+	data, err := app.Config.S.ShortURLInfo(s)
 	if err != nil {
 		respondWithError(w, err)
 	} else {
@@ -51,12 +51,13 @@ func (app *App) getShortlinkInfo(w http.ResponseWriter, r *http.Request) {
 func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	// fmt.Printf("short link: %s\n", vars["shortlink"])
-	unShortlink, err := app.Config.S.UnShorten(vars["shortlink"])
+	url, err := app.Config.S.UnShorten(vars["shorturl"])
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		http.Redirect(w, r, unShortlink, http.StatusTemporaryRedirect)
+		// TODO parse req and save it
+		ParseReq(r)
+		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }
 
