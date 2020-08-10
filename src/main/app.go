@@ -38,5 +38,6 @@ func (app *App) initializeRoutes() {
 
 // Run the app
 func (app *App) Run(addr string) {
+	log.Printf("Server running on: %s", addr)
 	log.Fatal(http.ListenAndServe(addr, app.Router))
 }

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/mattheath/base62"
 )
 
 const (
@@ -54,7 +53,7 @@ func (r *RedisCli) Shorten(url string, exp int64) (string, error) {
 	// convert url to sha1 hash
 	h := toSha1(url)
 
-	// fetch if if the url is cached
+	// fetch it if the url is cached
 	data, err := r.Cli.Get(fmt.Sprintf(URLHashKey, h)).Result()
 	if err == redis.Nil {
 		// not exist, nothing to do
@@ -67,7 +66,7 @@ func (r *RedisCli) Shorten(url string, exp int64) (string, error) {
 			return data, nil
 		}
 	}
-
+	// TODO should lock #1 begin
 	// increase the global counter
 	err = r.Cli.Incr(URLIDKEY).Err()
 	if err != nil {
@@ -76,7 +75,8 @@ func (r *RedisCli) Shorten(url string, exp int64) (string, error) {
 
 	// encode global counter to base62
 	id, err := r.Cli.Get(URLIDKEY).Int64()
-	eid := base62.EncodeInt64(id)
+	eid := Base62Encode(id)
+	// TODO should lock #1 end
 
 	// store the url against this encoded id
 	err = r.Cli.Set(fmt.Sprintf(ShortlinkKey, eid), url,

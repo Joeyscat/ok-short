@@ -1,7 +1,10 @@
 package main
 
+import "fmt"
+
 func main() {
 	app := App{}
-	app.Initialize(getEnv())
-	app.Run(":8000")
+	env := getEnv()
+	app.Initialize(env)
+	app.Run(fmt.Sprintf(":%d", env.port))
 }

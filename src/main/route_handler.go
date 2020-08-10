@@ -9,6 +9,8 @@ import (
 	"net/http"
 )
 
+const SiteUrl = "iiu8.cn/"
+
 func (app *App) createShortlink(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
@@ -29,7 +31,7 @@ func (app *App) createShortlink(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		respondWithJSON(w, http.StatusCreated, shortlinkResp{Shortlink: s, Code: 2000, Message: "OK"})
+		respondWithJSON(w, http.StatusCreated, shortlinkResp{Shortlink: SiteUrl + s, Code: 2000, Message: "OK"})
 	}
 }
 
