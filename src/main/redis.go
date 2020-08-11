@@ -3,30 +3,20 @@ package main
 import (
 	"errors"
 	"fmt"
-	"time"
-
 	"github.com/go-redis/redis"
 )
 
 const (
 	// URLIdKey redis自增主键所用的key
 	URLIdKey = "next.url.id"
-	// ShortURLKey mapping the shorturl to the url
-	ShortURLKey = "shorturl:%s:url"
-	// ShortURLDetailKey mapping the shorturl to the detail of url
-	ShortURLDetailKey = "shorturl:%s:detail"
+	// ShortURLKey mapping the shortURL to the url
+	ShortURLKey = "short_url:%s:url"
+	// ShortURLDetailKey mapping the shortURL to the detail of url
+	ShortURLDetailKey = "short_url:%s:detail"
 )
 
 type RedisCli struct {
 	Cli *redis.Client
-}
-
-// URLDetail contains the detail of the shorturl
-// TODO MYSQL
-type URLDetail struct {
-	URL                 string        `json:"url"`
-	CreateAt            string        `json:"created_at"`
-	ExpirationInMinutes time.Duration `json:"expiration_in_minutes"`
 }
 
 // NewRedisCli create a redis client

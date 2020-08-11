@@ -33,7 +33,7 @@ func (app *App) initializeRoutes() {
 	app.Router.Handle("/api/info", m.ThenFunc(app.getShortURLInfo)).Methods(http.MethodGet, http.MethodOptions)
 	app.Router.Use(mux.CORSMethodMiddleware(app.Router))
 
-	app.Router.Handle("/{shorturl:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods(http.MethodGet)
+	app.Router.Handle("/{short_url:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods(http.MethodGet)
 }
 
 // Run the app

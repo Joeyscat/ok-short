@@ -26,7 +26,6 @@ func (app *App) createShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	fmt.Printf("create: %v\n", req)
 	s, err := app.Config.S.Shorten(req.URL, req.ExpirationInMinutes)
 	if err != nil {
 		respondWithError(w, err)
@@ -37,7 +36,7 @@ func (app *App) createShortURL(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) getShortURLInfo(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
-	s := values.Get("shorturl")
+	s := values.Get("short_url")
 
 	// fmt.Printf("get info: %s\n", s)
 	data, err := app.Config.S.ShortURLInfo(s)
@@ -51,7 +50,7 @@ func (app *App) getShortURLInfo(w http.ResponseWriter, r *http.Request) {
 func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	url, err := app.Config.S.UnShorten(vars["shorturl"])
+	url, err := app.Config.S.UnShorten(vars["short_url"])
 	if err != nil {
 		respondWithError(w, err)
 	} else {
@@ -62,11 +61,13 @@ func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 }
 
 func respondWithError(w http.ResponseWriter, err error) {
+	log.Println(err)
 	switch e := err.(type) {
 	case Error:
 		log.Printf("HTTP %d - %s", e.Status(), e)
 		respondWithJSON(w, e.Status(), e.Error())
 	default:
+		// TODO need json, with code, message ...
 		respondWithJSON(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }

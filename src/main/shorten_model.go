@@ -2,7 +2,7 @@ package main
 
 type shortenReq struct {
 	URL                 string `json:"url" validate:"nonzero"`
-	ExpirationInMinutes int64  `json:"expiration_in_minutes" validate:"min=0"`
+	ExpirationInMinutes uint32 `json:"expiration_in_minutes" validate:"min=0"`
 }
 
 type shortenResp struct {

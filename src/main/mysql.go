@@ -2,76 +2,71 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
+	"errors"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func StoreURLDetail() {
-
+type MySQL struct {
+	DB *sql.DB
 }
 
-func Mysql() {
-	db, err := sql.Open("mysql", "root:123456@/ok-short?charset=utf8")
-	checkErr(err)
-
-	//插入数据
-	stmt, err := db.Prepare("INSERT userinfo SET username=?,departname=?,created=?")
-	checkErr(err)
-
-	res, err := stmt.Exec("astaxie", "研发部门", "2012-12-09")
-	checkErr(err)
-
-	id, err := res.LastInsertId()
-	checkErr(err)
-
-	fmt.Println(id)
-	//更新数据
-	stmt, err = db.Prepare("update userinfo set username=? where uid=?")
-	checkErr(err)
-
-	res, err = stmt.Exec("astaxieupdate", id)
-	checkErr(err)
-
-	affect, err := res.RowsAffected()
-	checkErr(err)
-
-	fmt.Println(affect)
-
-	//查询数据
-	rows, err := db.Query("SELECT * FROM userinfo")
-	checkErr(err)
-
-	for rows.Next() {
-		var uid int
-		var username string
-		var department string
-		var created string
-		err = rows.Scan(&uid, &username, &department, &created)
-		checkErr(err)
-		fmt.Println(uid)
-		fmt.Println(username)
-		fmt.Println(department)
-		fmt.Println(created)
-	}
-
-	//删除数据
-	stmt, err = db.Prepare("delete from userinfo where uid=?")
-	checkErr(err)
-
-	res, err = stmt.Exec(id)
-	checkErr(err)
-
-	affect, err = res.RowsAffected()
-	checkErr(err)
-
-	fmt.Println(affect)
-
-	db.Close()
+// URLDetail contains the detail of the shortURL
+type URLDetail struct {
+	Id                  string    `json:"id"`
+	URL                 string    `json:"url"`
+	ShortCode           string    `json:"short_code"`
+	CreatedBy           uint32    `json:"created_by"`
+	CreatedAt           time.Time `json:"created_at"`
+	ExpirationInMinutes uint32    `json:"expiration_in_minutes"`
 }
 
-func checkErr(err error) {
+func NewMySQL(driverName, dataSourceName string) *MySQL {
+	db, err := sql.Open(driverName, dataSourceName)
 	if err != nil {
 		panic(err)
 	}
+	return &MySQL{DB: db}
+}
+
+func (m *MySQL) InsertURLDetail(d *URLDetail) (int64, error) {
+	//插入数据
+	stmt, err := m.DB.Prepare(
+		"INSERT url_detail SET url=?, short_code=?, created_by=?, created_at=?, expiration_in_minutes=?")
+	if err != nil {
+		return 0, err
+	}
+
+	res, err := stmt.Exec(d.URL, d.ShortCode,
+		d.CreatedBy, d.CreatedAt, d.ExpirationInMinutes)
+	if err != nil {
+		return 0, err
+	}
+
+	id, err := res.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+
+	return id, err
+}
+func (m *MySQL) QueryUrlDetail(shortCode string) (*URLDetail, error) {
+	rows, err := m.DB.Query("SELECT id, url, short_code, created_by, created_at, expiration_in_minutes FROM url_detail where short_code=?", shortCode)
+	if err != nil {
+		return nil, err
+	}
+
+	if rows.Next() {
+		d := URLDetail{}
+		err := rows.Scan(&d.Id, &d.URL, &d.ShortCode, &d.CreatedBy, &d.CreatedAt, &d.ExpirationInMinutes)
+		if err != nil {
+			return nil, err
+		}
+		if rows.Next() {
+			return nil, errors.New("Should not have more then 1 URLDetail for shortCode: " + shortCode)
+		}
+		return &d, nil
+	}
+	return nil, nil
 }
