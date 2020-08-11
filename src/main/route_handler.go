@@ -30,7 +30,7 @@ func (app *App) createShortURL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		respondWithJSON(w, http.StatusCreated, shortenResp{ShortURL: SiteUrl + s, Code: 2000, Message: "OK"})
+		respondWithJSON(w, http.StatusCreated, shortenResp{ShortURL: SiteURI + s, Code: 2000, Message: "OK"})
 	}
 }
 
@@ -49,13 +49,13 @@ func (app *App) getShortURLInfo(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-
-	url, err := app.Config.S.UnShorten(vars["short_url"])
+	sc := vars["short_url"]
+	url, err := app.Config.S.UnShorten(sc)
 	if err != nil {
 		respondWithError(w, err)
 	} else {
 		// TODO parse req and save it
-		ParseReq(r)
+		app.Config.S.StoreVisitedLog(r, sc)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }
