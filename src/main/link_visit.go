@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type ShortURLVisitedLog struct {
+type LinkVisitedLog struct {
 	Id         string    `json:"id"`
 	RemoteAddr string    `json:"remote_addr"`
 	ShortCode  string    `json:"short_code"`
@@ -17,14 +17,14 @@ type ShortURLVisitedLog struct {
 }
 
 // GetVisitedLog 从http请求提取短链接访问记录
-func GetVisitedLog(r *http.Request, shortCode string) *ShortURLVisitedLog {
-	reqLog := ShortURLVisitedLog{
-		RemoteAddr: r.RemoteAddr,
+func GetVisitedLog(r *http.Request, shortCode string) *LinkVisitedLog {
+	reqLog := LinkVisitedLog{
+		RemoteAddr: r.Header.Get("Remote_addr"),
 		ShortCode:  shortCode,
 		UA:         r.UserAgent(),
 		Cookie:     r.Header.Get("Cookie"),
 		VisitorId:  "0",
-		VisitedAt:  time.Now(),
+		VisitedAt:  Now(),
 	}
 	log.Printf("ReqLog: %+v\n", reqLog)
 	return &reqLog
@@ -32,6 +32,6 @@ func GetVisitedLog(r *http.Request, shortCode string) *ShortURLVisitedLog {
 
 // ParseShortUrlReq 解析访问记录
 // 时间，地点，操作系统，浏览器，网络类型，
-func ParseShortUrlReq(visitLog *ShortURLVisitedLog) {
+func ParseShortUrlReq(visitLog *LinkVisitedLog) {
 
 }

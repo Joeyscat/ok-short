@@ -9,10 +9,8 @@ import (
 const (
 	// URLIdKey redis自增主键所用的key
 	URLIdKey = "next.url.id"
-	// ShortURLKey mapping the shortURL to the url
-	ShortURLKey = "short_url:%s:url"
-	// ShortURLDetailKey mapping the shortURL to the detail of url
-	ShortURLDetailKey = "short_url:%s:detail"
+	// LinkKey 用于保存短链与原始链接的映射
+	LinkKey = "link:%s:url"
 )
 
 type RedisCli struct {
@@ -37,7 +35,7 @@ func NewRedisCli(addr string, password string, db int) *RedisCli {
 func (r *RedisCli) UnShorten(key, encodedId string) (string, error) {
 	data, err := r.Cli.Get(fmt.Sprintf(key, encodedId)).Result()
 	if err == redis.Nil {
-		return "", StatusError{404, errors.New("Unknown short URL")}
+		return "", StatusError{404, errors.New("Unknown Link")}
 	} else if err != nil {
 		return "", err
 	} else {

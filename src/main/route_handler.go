@@ -9,9 +9,7 @@ import (
 	"net/http"
 )
 
-const SiteUrl = "iiu8.cn/"
-
-func (app *App) createShortURL(w http.ResponseWriter, r *http.Request) {
+func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
 	}
@@ -30,32 +28,33 @@ func (app *App) createShortURL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		respondWithJSON(w, http.StatusCreated, shortenResp{ShortURL: SiteURI + s, Code: 2000, Message: "OK"})
+		respondWithJSON(w, http.StatusCreated, shortenResp{Link: ShortURI + s, Code: 2000, Message: "OK"})
 	}
 }
 
-func (app *App) getShortURLInfo(w http.ResponseWriter, r *http.Request) {
+func (app *App) getLinkInfo(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 	s := values.Get("short_url")
 
 	// fmt.Printf("get info: %s\n", s)
-	data, err := app.Config.S.ShortURLInfo(s)
+	link, err := app.Config.S.LinkInfo(s)
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		respondWithJSON(w, http.StatusOK, data)
+		respondWithJSON(w, http.StatusOK, link)
 	}
 }
 
 func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	sc := vars["short_url"]
+	sc := vars["url"]
 	url, err := app.Config.S.UnShorten(sc)
 	if err != nil {
 		respondWithError(w, err)
 	} else {
-		// TODO parse req and save it
-		app.Config.S.StoreVisitedLog(r, sc)
+		// TODO 加入队列异步处理
+		l := GetVisitedLog(r, sc)
+		app.Config.S.StoreVisitedLog(l)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }

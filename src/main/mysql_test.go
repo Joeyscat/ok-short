@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"testing"
-	"time"
 )
 
 const (
@@ -11,56 +10,56 @@ const (
 	dataSourceName = "root:123456@/ok-short?charset=utf8&parseTime=true"
 )
 
-func TestInsertURLDetail(t *testing.T) {
+func TestInsertLink(t *testing.T) {
 	mySQL := NewMySQL(driverName, dataSourceName)
 
-	detail := &GenURLDetail{
-		URL:                 "www",
-		ShortCode:           "s",
-		CreatedBy:           0,
-		CreatedAt:           time.Now(),
-		ExpirationInMinutes: 30,
+	detail := &Link{
+		OriginURL: "www",
+		ShortCode: "s",
+		CreatedBy: 0,
+		CreatedAt: Now(),
+		Exp:       30,
 	}
-	id, err := mySQL.InsertGenURLDetail(detail)
+	id, err := mySQL.InsertLink(detail)
 	if err != nil {
 		t.Error(err)
 	}
 	log.Println(id)
 }
 
-func TestQueryURLDetail(t *testing.T) {
+func TestQueryLink(t *testing.T) {
 	mySQL := NewMySQL(driverName, dataSourceName)
 
 	var shortCode = "s"
-	detail, err := mySQL.QueryGenURLDetail(shortCode)
+	detail, err := mySQL.QueryLink(shortCode)
 	if err != nil {
 		t.Error(err)
 	}
 	log.Printf("%+v\n", detail)
 }
 
-func TestMySQL_InsertShortURLVisitedLog(t *testing.T) {
+func TestMySQL_InsertLinkVisitedLog(t *testing.T) {
 	mySQL := NewMySQL(driverName, dataSourceName)
 
-	visitedLog := &ShortURLVisitedLog{
+	visitedLog := &LinkVisitedLog{
 		RemoteAddr: "test:test",
 		ShortCode:  "test_sc",
 		UA:         "test-user-agent",
 		Cookie:     "test-cookie",
 		VisitorId:  "0",
-		VisitedAt:  time.Now(),
+		VisitedAt:  Now(),
 	}
-	detail, err := mySQL.InsertShortURLVisitedLog(visitedLog)
+	detail, err := mySQL.InsertLinkVisitedLog(visitedLog)
 	if err != nil {
 		t.Error(err)
 	}
 	log.Printf("%+v\n", detail)
 }
 
-func TestMySQL_QueryShortURLVisitedLog(t *testing.T) {
+func TestMySQL_QueryLinkVisitedLog(t *testing.T) {
 	mySQL := NewMySQL(driverName, dataSourceName)
 
-	logs, err := mySQL.QueryShortURLVisitedLog("K6")
+	logs, err := mySQL.QueryLinkVisitedLog("K6")
 	if err != nil {
 		t.Error(err)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 type Env struct {
-	S    Storage
+	S    Service
 	port int
 }
 
@@ -15,7 +15,11 @@ const (
 	RedisAddr      = "localhost:6379"
 	RedisDB        = "0"
 	DriverName     = "mysql"
-	DataSourceName = "root:123456@/ok-short?charset=utf8&parseTime=true"
+	DataSourceName = "root:123456@tcp(127.0.0.1:3306)/ok-short?charset=utf8&parseTime=true&loc=Local"
+)
+
+var (
+	ShortURI = "http://localhost:8700/"
 )
 
 func getEnv() *Env {
@@ -44,18 +48,24 @@ func getEnv() *Env {
 	if driverName == "" {
 		driverName = DriverName
 	}
-	dataSourceName := os.Getenv("APP_MYSQL_DATA_SOURCE_NAME")
+	dataSourceName := os.Getenv("APP_MYSQL_DSN")
 	if dataSourceName == "" {
 		dataSourceName = DataSourceName
 	}
 
+	siteURI := os.Getenv("APP_SHORT_URI")
+	if siteURI != "" {
+		ShortURI = siteURI
+	}
+
+	log.Printf("Site URI: %s\n", ShortURI)
 	log.Printf("connect to redis [addr: %s password: %s db: %d]\n", addr, password, db)
 	log.Printf("connect to mysql [%s]\n", dataSourceName)
 
 	r := NewRedisCli(addr, password, db)
 	m := NewMySQL(driverName, dataSourceName)
 	return &Env{
-		S: &Service{
+		S: &LinkService{
 			R: *r,
 			M: *m,
 		},

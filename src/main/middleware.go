@@ -10,9 +10,15 @@ import (
 type Middleware struct {
 }
 
-// LoggingHandler log the time-cosuming of http request
+// LoggingHandler 记录http请求日志
 func (m Middleware) LoggingHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
+		//header := r.Header
+		//remoteAddr := header.Get("Remote_addr")
+		//realIp := header.Get("X-Real-Ip")
+		//forwardedFor := header.Get("X-Forwarded-For")
+		//log.Printf("[Header] Remote_addr:%s | X-Real-Ip:%s | X-Forwarded-For:%s\n", remoteAddr, realIp, forwardedFor)
+
 		t1 := time.Now()
 		next.ServeHTTP(w, r)
 		t2 := time.Now()
