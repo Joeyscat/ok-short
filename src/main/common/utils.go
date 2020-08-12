@@ -1,11 +1,11 @@
-package main
+package common
 
 import (
 	"github.com/mattheath/base62"
 	"time"
 )
 
-const encodeCus = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+const encodeCus = "4HY6KuGCXIyvWQLUnJMF2AST7whfgOxo3NDeiRdBr51kpcPjtl9bqEzVaZs80m"
 
 var customEncoding = base62.NewEncoding(encodeCus)
 

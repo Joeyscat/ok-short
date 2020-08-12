@@ -1,14 +1,18 @@
 package main
 
 import (
+	"github.com/joeyscat/ok-short/admin"
+	"github.com/joeyscat/ok-short/api"
+	. "github.com/joeyscat/ok-short/store"
 	"log"
 	"os"
 	"strconv"
 )
 
 type Env struct {
-	S    Service
-	port int
+	API   api.Service
+	ADMIN admin.Service
+	port  int
 }
 
 const (
@@ -19,7 +23,7 @@ const (
 )
 
 var (
-	ShortURI = "http://localhost:8700/"
+	LinkPrefix = "http://localhost:8700/"
 )
 
 func getEnv() *Env {
@@ -53,21 +57,22 @@ func getEnv() *Env {
 		dataSourceName = DataSourceName
 	}
 
-	siteURI := os.Getenv("APP_SHORT_URI")
+	siteURI := os.Getenv("APP_LINK_PREFIX")
 	if siteURI != "" {
-		ShortURI = siteURI
+		LinkPrefix = siteURI
 	}
 
-	log.Printf("Site URI: %s\n", ShortURI)
+	log.Printf("LinkPrefix: %s\n", LinkPrefix)
 	log.Printf("connect to redis [addr: %s password: %s db: %d]\n", addr, password, db)
 	log.Printf("connect to mysql [%s]\n", dataSourceName)
 
 	r := NewRedisCli(addr, password, db)
 	m := NewMySQL(driverName, dataSourceName)
 	return &Env{
-		S: &LinkService{
+		API: &api.LinkService{
 			R: *r,
 			M: *m,
 		},
+
 		port: port}
 }

@@ -1,6 +1,7 @@
-package main
+package store
 
 import (
+	. "github.com/joeyscat/ok-short/common"
 	"log"
 	"testing"
 )

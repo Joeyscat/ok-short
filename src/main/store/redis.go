@@ -1,9 +1,10 @@
-package main
+package store
 
 import (
 	"errors"
 	"fmt"
 	"github.com/go-redis/redis"
+	. "github.com/joeyscat/ok-short/common"
 )
 
 const (
@@ -35,7 +36,7 @@ func NewRedisCli(addr string, password string, db int) *RedisCli {
 func (r *RedisCli) UnShorten(key, encodedId string) (string, error) {
 	data, err := r.Cli.Get(fmt.Sprintf(key, encodedId)).Result()
 	if err == redis.Nil {
-		return "", StatusError{404, errors.New("Unknown Link")}
+		return "", StatusError{Code: 404, Err: errors.New("Unknown Link")}
 	} else if err != nil {
 		return "", err
 	} else {

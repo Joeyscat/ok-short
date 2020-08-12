@@ -1,9 +1,10 @@
-package main
+package store
 
 import (
 	"database/sql"
 	"errors"
 	_ "github.com/go-sql-driver/mysql"
+	. "github.com/joeyscat/ok-short/common"
 )
 
 type MySQL struct {

@@ -1,4 +1,6 @@
-package main
+package api
+
+import . "github.com/joeyscat/ok-short/common"
 
 type Service interface {
 	Shorten(url string, exp uint32) (string, error)

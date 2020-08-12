@@ -1,7 +1,9 @@
-package main
+package api
 
 import (
 	"fmt"
+	"github.com/joeyscat/ok-short"
+	. "github.com/joeyscat/ok-short/store"
 	"log"
 	"testing"
 )
@@ -19,7 +21,7 @@ func TestShorten(t *testing.T) {
 
 func TestLinkInfo(t *testing.T) {
 	redisCli := NewRedisCli("localhost:6379", "", 0)
-	mySQL := NewMySQL(DriverName, DataSourceName)
+	mySQL := NewMySQL(main.DriverName, main.DataSourceName)
 	service := LinkService{R: *redisCli, M: *mySQL}
 
 	info, err := service.LinkInfo("HK")
@@ -42,7 +44,7 @@ func TestUnShorten(t *testing.T) {
 
 func TestAll(t *testing.T) {
 	redisCli := NewRedisCli("localhost:6379", "", 0)
-	mySQL := NewMySQL(DriverName, DataSourceName)
+	mySQL := NewMySQL(main.DriverName, main.DataSourceName)
 	service := LinkService{R: *redisCli, M: *mySQL}
 
 	eid, err := service.Shorten("www.github.com", 30)
