@@ -43,8 +43,8 @@ func (s *LinkService) Shorten(originURL string, exp uint32) (string, error) {
 }
 
 // LinkInfo returns the detail of the link
-func (s *LinkService) LinkInfo(eid string) (interface{}, error) {
-	return s.M.QueryLink(eid)
+func (s *LinkService) LinkInfo(eid string) (*Link, error) {
+	return s.M.GetLinkInfo(eid)
 }
 
 // UnShorten 将短链还原为原始链接

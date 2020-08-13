@@ -68,11 +68,19 @@ func getEnv() *Env {
 
 	r := NewRedisCli(addr, password, db)
 	m := NewMySQL(driverName, dataSourceName)
+
 	return &Env{
 		API: &api.LinkService{
 			R: *r,
 			M: *m,
 		},
-
+		ADMIN: admin.Service{
+			CreatorService: admin.CreatorService{},
+			LinkService: admin.LinkService{
+				R: *r,
+				M: *m,
+			},
+			VisitorService: admin.VisitorService{},
+		},
 		port: port}
 }

@@ -81,12 +81,12 @@ CREATE TABLE `visitors`
 
 # -------------------------
 SELECT *
-FROM short_url_gen_detail
+FROM ok_link
 ORDER BY id DESC;
 # WHERE short_code = 'Yt';
 
 SELECT *
-FROM short_url_visited_log
+FROM ok_link_visited_log
 ORDER BY id desc;
 
 # TODO 云服务器MySQL时区问题

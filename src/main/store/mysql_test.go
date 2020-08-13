@@ -32,7 +32,7 @@ func TestQueryLink(t *testing.T) {
 	mySQL := NewMySQL(driverName, dataSourceName)
 
 	var shortCode = "s"
-	detail, err := mySQL.QueryLink(shortCode)
+	detail, err := mySQL.GetLinkInfo(shortCode)
 	if err != nil {
 		t.Error(err)
 	}

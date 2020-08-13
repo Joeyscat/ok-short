@@ -4,7 +4,7 @@ import . "github.com/joeyscat/ok-short/common"
 
 type Service interface {
 	Shorten(url string, exp uint32) (string, error)
-	LinkInfo(eid string) (interface{}, error)
+	LinkInfo(eid string) (*Link, error)
 	UnShorten(eid string) (string, error)
 	StoreVisitedLog(l *LinkVisitedLog)
 }

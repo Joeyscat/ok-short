@@ -39,8 +39,9 @@ func (m *MySQL) InsertLink(d *Link) (int64, error) {
 
 	return id, err
 }
-func (m *MySQL) QueryLink(shortCode string) (*Link, error) {
-	rows, err := m.DB.Query("SELECT id, url, short_code, created_by, created_at, expiration_in_minutes FROM short_url_gen_detail where short_code=?", shortCode)
+
+func (m *MySQL) GetLinkInfo(shortCode string) (*Link, error) {
+	rows, err := m.DB.Query("SELECT id, origin_url, short_code, created_by, created_at, expiration_in_minutes FROM ok_link where short_code=?", shortCode)
 	if err != nil {
 		return nil, err
 	}
@@ -57,6 +58,36 @@ func (m *MySQL) QueryLink(shortCode string) (*Link, error) {
 		return &d, nil
 	}
 	return nil, nil
+}
+
+func (m *MySQL) GetLinkList(offset, size uint32) (*[]Link, uint32, uint32, error) {
+	rows, err := m.DB.Query("SELECT id, origin_url, short_code, created_by, created_at, expiration_in_minutes FROM ok_link limit ?,?", offset, size)
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	var links []Link
+	for rows.Next() {
+		l := Link{}
+		err := rows.Scan(&l.Id, &l.URL, &l.ShortCode, &l.CreatedBy, &l.CreatedAt, &l.Exp)
+		if err != nil {
+			return nil, 0, 0, err
+		}
+		links = append(links, l)
+	}
+	// Total
+	rows, err = m.DB.Query("SELECT count(id) FROM ok_link")
+	if err != nil {
+		return nil, 0, 0, err
+	}
+	var total uint32
+	if rows.Next() {
+		err = rows.Scan(&total)
+		if err != nil {
+			return nil, 0, 0, err
+		}
+	}
+
+	return &links, uint32(len(links)), total, nil
 }
 
 func (m *MySQL) InsertLinkVisitedLog(log *LinkVisitedLog) (int64, error) {

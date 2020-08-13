@@ -8,6 +8,7 @@ import (
 	"gopkg.in/validator.v2"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
@@ -36,12 +37,16 @@ func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
 func (app *App) getLinkInfo(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 	s := values.Get("short_url")
+	if s == "" {
+		respondWithError(w, StatusError{Code: http.StatusBadRequest, Err: fmt.Errorf("short_url required")})
+	}
 
 	// fmt.Printf("get info: %s\n", s)
 	link, err := app.Config.API.LinkInfo(s)
 	if err != nil {
 		respondWithError(w, err)
 	} else {
+		link.Id = 0
 		respondWithJSON(w, http.StatusOK, link)
 	}
 }
@@ -95,7 +100,19 @@ func getVisitedLog(r *http.Request, shortCode string) *LinkVisitedLog {
 
 // --------------------------- admin ----------------------------
 
-func (app *App) login(w http.ResponseWriter, r *http.Request) {
+func (app *App) links(w http.ResponseWriter, r *http.Request) {
+	values := r.URL.Query()
+	page, _ := strconv.ParseInt(values.Get("page"), 10, 32)
+	size, _ := strconv.ParseInt(values.Get("size"), 10, 32)
 
-	app.Config.ADMIN.Login("", "")
+	links, count, total, err := app.Config.ADMIN.QueryLinks(uint32(page), uint32(size))
+	if err != nil {
+		respondWithError(w, err)
+		return
+	}
+	respondWithJSON(w, http.StatusOK, queryLinksResp{
+		Total: total,
+		Count: count,
+		Links: links,
+	})
 }
