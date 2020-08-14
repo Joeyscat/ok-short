@@ -7,6 +7,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gorilla/mux v1.7.4
+	github.com/jinzhu/gorm v1.9.16
 	github.com/justinas/alice v1.2.0
 	github.com/leodido/go-urn v1.2.0 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a

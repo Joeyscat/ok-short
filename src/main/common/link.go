@@ -11,7 +11,7 @@ type Link struct { // TODO
 	Group     Group     `json:"group"` // 分组
 	Name      string    `json:"name"`
 	OriginURL string    `json:"origin_url"` // 原始链接
-	Trace     Trace     `json:"Trace"`
+	Pv        Trace     `json:"pv"`
 	ShortCode string    `json:"short_code"`
 	CreatedBy uint32    `json:"-"`
 	CreatedAt time.Time `json:"created_at"`

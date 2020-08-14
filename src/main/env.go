@@ -75,7 +75,7 @@ func getEnv() *Env {
 			M: *m,
 		},
 		ADMIN: admin.Service{
-			CreatorService: admin.CreatorService{},
+			AuthorService: admin.AuthorService{},
 			LinkService: admin.LinkService{
 				R: *r,
 				M: *m,

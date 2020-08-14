@@ -100,6 +100,10 @@ func getVisitedLog(r *http.Request, shortCode string) *LinkVisitedLog {
 
 // --------------------------- admin ----------------------------
 
+func (app *App) login(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func (app *App) links(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
 	page, _ := strconv.ParseInt(values.Get("page"), 10, 32)

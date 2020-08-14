@@ -12,6 +12,9 @@ const (
 	URLIdKey = "next.url.id"
 	// LinkKey 用于保存短链与原始链接的映射
 	LinkKey = "link:%s:url"
+
+	AdminTokenKey = "admin:%s:token"
+	AdminInfoKey  = "admin:%s:info"
 )
 
 type RedisCli struct {
