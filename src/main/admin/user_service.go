@@ -15,7 +15,6 @@ import (
 )
 
 type UserService struct {
-	R RedisCli
 }
 
 const (
@@ -36,7 +35,7 @@ func (User) TableName() string {
 	return "ok_link_admin_user"
 }
 
-func (us *UserService) Registry(name, pw string) (bool, error) {
+func (us *UserService) Register(name, pw string) (bool, error) {
 	if name == "" || pw == "" {
 		return false, badReqErr("用户名/密码不能为空")
 	}
@@ -76,12 +75,26 @@ func (us *UserService) Login(name, pw string) (string, error) {
 	if u.Name == "" || u.Name != name {
 		return "", badReqErr("用户名/密码输入错误")
 	}
-	// 生成Token
+
+	// 取出旧Token
+	tokenCache, err := ReCli.Cli.Get(fmt.Sprintf(AdminTokenKey, name)).Result()
+	if err == redis.Nil {
+	} else if err != nil {
+		return "", err
+	}
+	if tokenCache != "" {
+		err := ReCli.Cli.Del(fmt.Sprintf(AdminInfoKey, tokenCache)).Err()
+		if err != nil {
+			log.Printf("用户缓存清除失败 %s", err.Error())
+		}
+	}
+
+	// 生成新Token并缓存
 	sum1 := sha256.Sum256([]byte(pw + strconv.Itoa(int(time.Now().UnixNano()))))
 	token := fmt.Sprintf("%x", sum1)
-	// 缓存Token
+
 	expiration := time.Minute * time.Duration(TokenFreshTime)
-	err := us.R.Cli.Set(fmt.Sprintf(AdminTokenKey, name), token, expiration).Err()
+	err = ReCli.Cli.Set(fmt.Sprintf(AdminTokenKey, name), token, expiration).Err()
 	if err != nil {
 		return "", err
 	}
@@ -90,34 +103,27 @@ func (us *UserService) Login(name, pw string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	err = us.R.Cli.Set(fmt.Sprintf(AdminInfoKey, name), userJson, expiration).Err()
+	err = ReCli.Cli.Set(fmt.Sprintf(AdminInfoKey, token), userJson, expiration).Err()
 	if err != nil {
 		return "", err
 	}
 	return token, nil
 }
 
-// 先查询token缓存，确认传入的token是正确的，然后根据token查询用户缓存
-func (us *UserService) UserInfo(name, token string) (string, error) {
-	if name == "" || token == "" {
+// 根据token查询用户缓存
+func (us *UserService) UserInfo(token string) (string, error) {
+	if token == "" {
 		return "", badReqErr("用户名/Token参数错误")
 	}
-	tokenCache, err := us.R.Cli.Get(fmt.Sprintf(AdminTokenKey, name)).Result()
-	if err == redis.Nil {
-		return "", unAuthErr("用户未登录 " + name)
-	} else if err != nil {
-		return "", unAuthErr(fmt.Sprintf("获取Token缓存失败 %s", err.Error()))
-	}
-	if token != tokenCache {
-		return "", unAuthErr("Token信息错误")
-	}
 
-	userCache, err := us.R.Cli.Get(fmt.Sprintf(AdminInfoKey, name)).Result()
-	if err != nil {
+	userCache, err := ReCli.Cli.Get(fmt.Sprintf(AdminInfoKey, token)).Result()
+	if err == redis.Nil {
+		return "", unAuthErr("Token无效 ")
+	} else if err != nil {
 		return "", err
 	}
 	if userCache == "" {
-		return "", unAuthErr("用户未登录 " + name)
+		return "", unAuthErr("Token无效 " + token)
 	}
 
 	return userCache, nil

@@ -32,8 +32,10 @@ func (app *App) initializeRoutes() {
 	app.Router.Handle("/api/shorten", m.ThenFunc(app.createLink)).Methods(http.MethodPost, http.MethodOptions)
 	app.Router.Handle("/api/info", m.ThenFunc(app.getLinkInfo)).Methods(http.MethodGet, http.MethodOptions)
 
+	app.Router.Handle("/admin-api/register", m.ThenFunc(app.register)).Methods(http.MethodPost, http.MethodOptions)
+	app.Router.Handle("/admin-api/login", m.ThenFunc(app.login)).Methods(http.MethodPost, http.MethodOptions)
+	app.Router.Handle("/admin-api/user", m.ThenFunc(app.adminInfo)).Methods(http.MethodGet, http.MethodOptions)
 	app.Router.Handle("/admin/links", m.ThenFunc(app.links)).Methods(http.MethodGet, http.MethodOptions)
-	app.Router.Handle("/admin/link", m.ThenFunc(app.links)).Methods(http.MethodGet, http.MethodOptions)
 
 	app.Router.Use(mux.CORSMethodMiddleware(app.Router))
 

@@ -69,6 +69,8 @@ func getEnv() *Env {
 	r := NewRedisCli(addr, password, db)
 	m := NewMySQL(driverName, dataSourceName)
 
+	ReCli = *r
+
 	return &Env{
 		API: &api.LinkService{
 			R: *r,

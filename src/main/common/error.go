@@ -2,7 +2,7 @@ package common
 
 type Error interface {
 	error
-	Status() int
+	ECode() int
 }
 
 type StatusError struct {
@@ -14,6 +14,6 @@ func (se StatusError) Error() string {
 	return se.Err.Error()
 }
 
-func (se StatusError) Status() int {
+func (se StatusError) ECode() int {
 	return se.Code
 }

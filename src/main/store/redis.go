@@ -21,6 +21,8 @@ type RedisCli struct {
 	Cli *redis.Client
 }
 
+var ReCli RedisCli = RedisCli{}
+
 // NewRedisCli create a redis client
 func NewRedisCli(addr string, password string, db int) *RedisCli {
 	c := redis.NewClient(&redis.Options{
@@ -39,7 +41,7 @@ func NewRedisCli(addr string, password string, db int) *RedisCli {
 func (r *RedisCli) UnShorten(key, encodedId string) (string, error) {
 	data, err := r.Cli.Get(fmt.Sprintf(key, encodedId)).Result()
 	if err == redis.Nil {
-		return "", StatusError{Code: 404, Err: errors.New("Unknown Link")}
+		return "", StatusError{Code: LinkNotExists, Err: errors.New(BSText(LinkNotExists))}
 	} else if err != nil {
 		return "", err
 	} else {

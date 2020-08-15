@@ -4,7 +4,7 @@ package admin
 type AuthorService struct {
 }
 
-func (*AuthorService) Login(name, password string) bool {
+func (*AuthorService) List() bool {
 
 	return false
 }
