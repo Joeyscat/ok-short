@@ -2,15 +2,12 @@ package api
 
 import (
 	"fmt"
-	"github.com/joeyscat/ok-short"
-	. "github.com/joeyscat/ok-short/store"
 	"log"
 	"testing"
 )
 
 func TestShorten(t *testing.T) {
-	redisCli := NewRedisCli("localhost:6379", "", 0)
-	service := LinkService{R: *redisCli}
+	service := LinkService{}
 
 	url, err := service.Shorten("www.github.com", 30)
 	if err != nil {
@@ -20,11 +17,9 @@ func TestShorten(t *testing.T) {
 }
 
 func TestLinkInfo(t *testing.T) {
-	redisCli := NewRedisCli("localhost:6379", "", 0)
-	mySQL := NewMySQL(main.DriverName, main.DataSourceName)
-	service := LinkService{R: *redisCli, M: *mySQL}
+	service := LinkService{}
 
-	info, err := service.LinkInfo("HK")
+	info, err := service.LinkInfo("Gq")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,8 +27,7 @@ func TestLinkInfo(t *testing.T) {
 }
 
 func TestUnShorten(t *testing.T) {
-	redisCli := NewRedisCli("localhost:6379", "", 0)
-	service := LinkService{R: *redisCli}
+	service := LinkService{}
 
 	originUrl, err := service.UnShorten("z")
 	if err != nil {
@@ -43,9 +37,7 @@ func TestUnShorten(t *testing.T) {
 }
 
 func TestAll(t *testing.T) {
-	redisCli := NewRedisCli("localhost:6379", "", 0)
-	mySQL := NewMySQL(main.DriverName, main.DataSourceName)
-	service := LinkService{R: *redisCli, M: *mySQL}
+	service := LinkService{}
 
 	eid, err := service.Shorten("www.github.com", 30)
 	if err != nil {

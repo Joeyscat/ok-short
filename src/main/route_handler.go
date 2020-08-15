@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	. "github.com/joeyscat/ok-short/common"
+	"github.com/joeyscat/ok-short/store"
 	"gopkg.in/validator.v2"
 	"log"
 	"net/http"
@@ -35,7 +36,7 @@ func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusCreated, Resp{
 			Code:    Success,
 			Message: BSText(Success),
-			Data:    ShortenRespData{Link: LinkPrefix + s},
+			Data:    ShortenRespData{Link: store.LinkPrefix + s},
 		})
 	}
 }
@@ -79,7 +80,6 @@ func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 // 返回错误响应，status为HTTP状态码, 业务代码默认为系统错误
 // 当err参数为自定义的Error时，从中提取code作为业务代码
 func respondWithError(w http.ResponseWriter, status int, err error) {
-	log.Println(err)
 	switch e := err.(type) {
 	case Error:
 		log.Printf("HTTP %d - %s", status, e)

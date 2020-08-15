@@ -21,8 +21,6 @@ type RedisCli struct {
 	Cli *redis.Client
 }
 
-var ReCli RedisCli = RedisCli{}
-
 // NewRedisCli create a redis client
 func NewRedisCli(addr string, password string, db int) *RedisCli {
 	c := redis.NewClient(&redis.Options{
@@ -39,7 +37,7 @@ func NewRedisCli(addr string, password string, db int) *RedisCli {
 }
 
 func (r *RedisCli) UnShorten(key, encodedId string) (string, error) {
-	data, err := r.Cli.Get(fmt.Sprintf(key, encodedId)).Result()
+	data, err := ReCli.Cli.Get(fmt.Sprintf(key, encodedId)).Result()
 	if err == redis.Nil {
 		return "", StatusError{Code: LinkNotExists, Err: errors.New(BSText(LinkNotExists))}
 	} else if err != nil {
@@ -52,13 +50,13 @@ func (r *RedisCli) UnShorten(key, encodedId string) (string, error) {
 func (r *RedisCli) GenId() (int64, error) {
 	// TODO should lock #1 begin
 	// increase the global counter
-	err := r.Cli.Incr(URLIdKey).Err()
+	err := ReCli.Cli.Incr(URLIdKey).Err()
 	if err != nil {
 		return -1, err
 	}
 
 	// encode global counter to base62
-	id, err := r.Cli.Get(URLIdKey).Int64()
+	id, err := ReCli.Cli.Get(URLIdKey).Int64()
 	if err != nil {
 		return -1, err
 	}

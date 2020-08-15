@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	. "github.com/joeyscat/ok-short/common"
 	. "github.com/joeyscat/ok-short/store"
@@ -9,19 +10,17 @@ import (
 )
 
 type LinkService struct {
-	R RedisCli
-	M MySQL
 }
 
 // 将普通链接转为短链接
 func (s *LinkService) Shorten(originURL string, exp uint32) (string, error) {
 	// 生成ID，并进行62进制编码
-	id, err := s.R.GenId()
+	id, err := ReCli.GenId()
 	eid := Base62Encode(id)
 
 	expiration := time.Minute * time.Duration(exp)
 	// 存储原链接与短链接代码的映射
-	err = s.R.Cli.Set(fmt.Sprintf(LinkKey, eid), originURL, expiration).Err()
+	err = ReCli.Cli.Set(fmt.Sprintf(LinkKey, eid), originURL, expiration).Err()
 	if err != nil {
 		return "", err
 	}
@@ -30,13 +29,13 @@ func (s *LinkService) Shorten(originURL string, exp uint32) (string, error) {
 		OriginURL: originURL,
 		ShortCode: eid,
 		CreatedBy: 0,
-		CreatedAt: Now(),
 		Exp:       exp,
 	}
 	// TODO 定时清理过期数据
-	_, err = s.M.InsertLink(detail)
-	if err != nil {
-		return "", err
+	MyDB.Create(detail)
+
+	if MyDB.NewRecord(detail) {
+		return "", StatusError{Code: LinkCreateFail, Err: errors.New(BSText(LinkCreateFail))}
 	}
 
 	return eid, nil
@@ -44,17 +43,29 @@ func (s *LinkService) Shorten(originURL string, exp uint32) (string, error) {
 
 // LinkInfo returns the detail of the link
 func (s *LinkService) LinkInfo(eid string) (*Link, error) {
-	return s.M.GetLinkInfo(eid)
+	var link Link
+	MyDB.Where("short_code = ?", eid).Last(&link)
+
+	if link.OriginURL == "" {
+		return nil, StatusError{
+			Code: LinkNotExists,
+			Err:  errors.New(BSText(LinkNotExists)),
+		}
+	}
+
+	return &link, nil
 }
 
 // UnShorten 将短链还原为原始链接
 func (s *LinkService) UnShorten(eid string) (string, error) {
-	return s.R.UnShorten(LinkKey, eid)
+	return ReCli.UnShorten(LinkKey, eid)
 }
 
 func (s *LinkService) StoreVisitedLog(l *LinkVisitedLog) {
-	_, err := s.M.InsertLinkVisitedLog(l)
-	if err != nil {
-		log.Println(err)
+
+	MyDB.Create(l)
+
+	if MyDB.NewRecord(l) {
+		log.Println("插入短链访问记录失败")
 	}
 }

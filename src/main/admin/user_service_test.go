@@ -7,7 +7,6 @@ import (
 )
 
 func TestUserService_Login(t *testing.T) {
-	redisCli := NewRedisCli("localhost:6379", "", 0)
 	type fields struct {
 		R RedisCli
 	}
@@ -24,7 +23,7 @@ func TestUserService_Login(t *testing.T) {
 	}{
 		{
 			name:   "登录测试",
-			fields: fields{R: *redisCli},
+			fields: fields{},
 			args: args{
 				name: "user1",
 				pw:   "pass",
@@ -51,7 +50,6 @@ func TestUserService_Login(t *testing.T) {
 
 func TestUserService_Registry(t *testing.T) {
 	type fields struct {
-		R RedisCli
 	}
 	type args struct {
 		name string
@@ -68,7 +66,7 @@ func TestUserService_Registry(t *testing.T) {
 			name:   "注册测试",
 			fields: fields{},
 			args: args{
-				name: "user2",
+				name: "user3",
 				pw:   "pass",
 			},
 			want:    true,
@@ -91,9 +89,7 @@ func TestUserService_Registry(t *testing.T) {
 }
 
 func TestUserService_UserInfo(t *testing.T) {
-	redisCli := NewRedisCli("localhost:6379", "", 0)
 	type fields struct {
-		R RedisCli
 	}
 	type args struct {
 		name  string
@@ -108,9 +104,9 @@ func TestUserService_UserInfo(t *testing.T) {
 	}{
 		{
 			name:   "用户信息测试",
-			fields: fields{R: *redisCli},
+			fields: fields{},
 			args: args{
-				token: "ece66206ecf55cd63b457b51a0c4e3beea8cdde162e26f0ae5ef9e83ea77b9b1",
+				token: "30dc04941dac7e71884da78c759d323396c2fa4962f3fc3740fd5f43db1203c6",
 			},
 			doNotWant: "",
 			wantErr:   false,

@@ -21,8 +21,9 @@ const (
 	ParamURLInvalid      = 3005
 	ParamPostBodyInvalid = 3006
 	// Link 4000~4999
-	LinkInvalid   = 4000
-	LinkNotExists = 4001
+	LinkInvalid    = 4000
+	LinkNotExists  = 4001
+	LinkCreateFail = 4002
 
 	ApiUnAuthorized = 48001
 	EmptyPostData   = 44002
@@ -47,6 +48,7 @@ var statusText = map[int]string{
 	ParamPostBodyInvalid: "Post请求参数不合法",
 	LinkInvalid:          "短链接无效",
 	LinkNotExists:        "短链接不存在",
+	LinkCreateFail:       "新增短链数据失败",
 }
 
 func BSText(code int) string {
