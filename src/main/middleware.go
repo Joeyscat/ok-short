@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// 用于接受Token的Header
+const TokenHeaderName = "OK-Short-Token"
+
 type Middleware struct {
 }
 
@@ -47,9 +50,11 @@ func (m Middleware) RecoverHandler(next http.Handler) http.Handler {
 // CorsHeadersHandler add headers for CORS Request
 func (m Middleware) CorsHeadersHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
-		if strings.Index(r.URL.String(), "/api") == 0 {
+		if strings.Index(r.URL.String(), "/api/") == 0 ||
+			strings.Index(r.URL.String(), "/admin-api/") == 0 {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, Accept,X-Requested-With")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, "+TokenHeaderName)
+			w.Header().Set("Access-Control-Max-Age", "1728000")
 		}
 		next.ServeHTTP(w, r)
 	}

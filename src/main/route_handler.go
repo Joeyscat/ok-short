@@ -23,8 +23,8 @@ func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := validator.Validate(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamInvalid,
-			Err: fmt.Errorf("%s %v", BSText(ParamInvalid), err.Error())})
+		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamIllegal,
+			Err: fmt.Errorf("%s %v", BSText(ParamIllegal), err.Error())})
 		return
 	}
 	defer r.Body.Close()
@@ -126,8 +126,8 @@ func (app *App) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := validator.Validate(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamInvalid,
-			Err: fmt.Errorf("%s %v", BSText(ParamInvalid), err.Error())})
+		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamIllegal,
+			Err: fmt.Errorf("%s %v", BSText(ParamIllegal), err.Error())})
 		return
 	}
 	defer r.Body.Close()
@@ -151,8 +151,8 @@ func (app *App) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if err := validator.Validate(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamInvalid,
-			Err: fmt.Errorf("%s %v", BSText(ParamInvalid), err.Error())})
+		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamIllegal,
+			Err: fmt.Errorf("%s %v", BSText(ParamIllegal), err.Error())})
 		return
 	}
 	defer r.Body.Close()

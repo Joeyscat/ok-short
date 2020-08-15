@@ -12,8 +12,9 @@ const (
 	UserAlreadyExists = 2001
 	UserRegisterFail  = 2002
 	UserLoginFail     = 2003
+	UserAlreadyLogin  = 2004
 	// Param 3000~3999
-	ParamInvalid         = 3000
+	ParamIllegal         = 3000
 	ParamUserNameEmpty   = 3001
 	ParamPasswordEmpty   = 3002
 	ParamTokenEmpty      = 3003
@@ -39,7 +40,8 @@ var statusText = map[int]string{
 	UserAlreadyExists:    "用户已存在",
 	UserRegisterFail:     "用户注册失败",
 	UserLoginFail:        "用户登录失败",
-	ParamInvalid:         "参数不合法",
+	UserAlreadyLogin:     "用户已在别处登录",
+	ParamIllegal:         "参数不合法",
 	ParamUserNameEmpty:   "参数[用户名]为空",
 	ParamPasswordEmpty:   "参数[密码]为空",
 	ParamTokenEmpty:      "参数[Token]为空",

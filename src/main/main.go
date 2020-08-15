@@ -12,4 +12,5 @@ func main() {
 	app.Run(fmt.Sprintf(":%d", env.port))
 
 	defer store.MyDB.Close() // TODO 集中关闭资源
+	defer store.ReCli.Cli.Close()
 }

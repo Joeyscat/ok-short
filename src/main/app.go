@@ -28,7 +28,8 @@ func (app *App) Initialize(env *Env) {
 func (app *App) initializeRoutes() {
 	m := alice.New(app.Middleware.LoggingHandler,
 		app.Middleware.RecoverHandler,
-		app.Middleware.CorsHeadersHandler)
+		app.Middleware.CorsHeadersHandler,
+	)
 	app.Router.Handle("/api/shorten", m.ThenFunc(app.createLink)).Methods(http.MethodPost, http.MethodOptions)
 	app.Router.Handle("/api/info", m.ThenFunc(app.getLinkInfo)).Methods(http.MethodGet, http.MethodOptions)
 
@@ -37,9 +38,9 @@ func (app *App) initializeRoutes() {
 	app.Router.Handle("/admin-api/user", m.ThenFunc(app.adminInfo)).Methods(http.MethodGet, http.MethodOptions)
 	app.Router.Handle("/admin/links", m.ThenFunc(app.links)).Methods(http.MethodGet, http.MethodOptions)
 
-	app.Router.Use(mux.CORSMethodMiddleware(app.Router))
-
 	app.Router.Handle("/{url:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods(http.MethodGet)
+
+	app.Router.Use(mux.CORSMethodMiddleware(app.Router))
 }
 
 // Run the app

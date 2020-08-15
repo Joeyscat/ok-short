@@ -18,8 +18,8 @@ var (
 
 	LinkPrefix = "http://localhost:8700/"
 
-	ReCli = RedisCli{}
-	MyDB  = &DB{}
+	ReCli = RedisCli{} // Redis存储
+	MyDB  = &DB{}      // MySQL存储
 )
 
 func init() {
