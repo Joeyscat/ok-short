@@ -47,16 +47,20 @@ func (m Middleware) RecoverHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-// CorsHeadersHandler add headers for CORS Request
-func (m Middleware) CorsHeadersHandler(next http.Handler) http.Handler {
+// CorsHandler 添加跨域请求必须的Header，并直接放行Options请求
+func (m Middleware) CorsHandler(next http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		if strings.Index(r.URL.String(), "/api/") == 0 ||
 			strings.Index(r.URL.String(), "/admin-api/") == 0 {
 			w.Header().Set("Access-Control-Allow-Origin", "*")
-			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, "+TokenHeaderName)
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Content-Length, Authorization, cross-request-open-sign, "+TokenHeaderName)
 			w.Header().Set("Access-Control-Max-Age", "1728000")
 		}
-		next.ServeHTTP(w, r)
+		if r.Method == http.MethodOptions {
+			// handle preflight in here
+		} else {
+			next.ServeHTTP(w, r)
+		}
 	}
 
 	return http.HandlerFunc(fn)

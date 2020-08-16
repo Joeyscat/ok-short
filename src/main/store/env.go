@@ -16,7 +16,7 @@ var (
 	DriverName     = "mysql"
 	DataSourceName = "root:123456@tcp(127.0.0.1:3306)/ok-short?charset=utf8&parseTime=true&loc=Local"
 
-	LinkPrefix = "http://localhost:8700/"
+	LinkPrefix = "http://sc.vaiwan.com/"
 
 	ReCli = RedisCli{} // Redis存储
 	MyDB  = &DB{}      // MySQL存储
@@ -72,5 +72,6 @@ func init() {
 		panic("failed to connect database")
 	}
 	log.Printf("MySQL Connected : %+v", db.DB().Stats())
+	db.LogMode(true)
 	MyDB = db
 }

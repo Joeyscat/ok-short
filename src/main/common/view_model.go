@@ -9,23 +9,38 @@ type ShortenRespData struct {
 	Link string `json:"link"`
 }
 
-type LinkInfoRespData struct {
-	Link Link `json:"link"`
+type LinkRespData struct {
+	Sid    string `json:"sid"` // 业务标识
+	URL    string `json:"url"` // 短链
+	Status string `json:"status"`
+	//Group     Group     `json:"group"` // 分组
+	Name      string `json:"name"`
+	OriginURL string `json:"origin_url"` // 原始链接
+	//PV     PV     `json:"pv"`
+	CreatedAt string `json:"created_at"`
 }
 
-type QueryLinksRespData struct {
-	Total uint32  `json:"total"`
-	Count uint32  `json:"count"`
-	Links *[]Link `json:"links"`
+type QueryListRespData struct {
+	TotalCount uint32      `json:"total_count"`
+	ItemCount  uint32      `json:"item_count"`
+	Item       interface{} `json:"item"`
+}
+
+type LinkTraceRespData struct {
+	Sid       string `json:"sid"`
+	URL       string `json:"url"`
+	UA        string `json:"ua"`
+	Ip        string `json:"ip"`
+	CreatedAt string `json:"visited_at"`
 }
 
 type RegisterReq struct {
-	Name     string `json:"name" validate:"min=6,max=20"`
+	Name     string `json:"name" validate:"min=5,max=20"`
 	Password string `json:"password" validate:"min=64,max=64"`
 }
 
 type LoginReq struct {
-	Name     string `json:"name" validate:"min=6,max=20"`
+	Name     string `json:"name" validate:"min=5,max=20"`
 	Password string `json:"password" validate:"min=64,max=64"`
 }
 
@@ -34,27 +49,13 @@ type LoginRespData struct {
 }
 
 type AdminInfoRespData struct {
-	Name      string `json:"name"`
-	AvatarURL string `json:"avatar_url"`
+	Name      string   `json:"name"`
+	Roles     []string `json:"roles"`
+	AvatarURL string   `json:"avatar"`
 }
 
 type Resp struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
-}
-
-func ErrResp(code int, msg string) Resp {
-	return Resp{
-		Code:    code,
-		Message: msg,
-	}
-}
-
-func OKResp(code int, msg string, data interface{}) Resp {
-	return Resp{
-		Code:    code,
-		Message: msg,
-		Data:    data,
-	}
 }

@@ -3,13 +3,13 @@ package admin
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/go-redis/redis"
-	"github.com/jinzhu/gorm"
 	"github.com/joeyscat/ok-short/common"
+	"github.com/joeyscat/ok-short/model"
 	. "github.com/joeyscat/ok-short/store"
 	"log"
-	"net/http"
 	"strconv"
 	"time"
 )
@@ -22,36 +22,26 @@ const (
 )
 
 // 管理员
-type User struct {
-	gorm.Model
-	Name      string
-	Password  string
-	Email     string `gorm:"type:varchar(100);unique_index"`
-	AvatarURL string
-}
-
-// 将 User 的表名设置为 `ok_link_admin_user`
-func (User) TableName() string {
-	return "ok_link_admin_user"
+type UserVO struct {
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	AvatarURL string `json:"avatar_url"`
 }
 
 func (us *UserService) Register(name, pw string) (bool, error) {
-	if name == "" || pw == "" {
-		return false, badReqErr("用户名/密码不能为空")
-	}
-	var u User
+	var u model.User
 	MyDB.Where("name = ?", &name).First(&u)
 	if u.Name != "" {
 		return false, common.StatusError{
-			Code: http.StatusBadRequest,
-			Err:  fmt.Errorf("用户已存在 %s", name),
+			Code: common.UserAlreadyExists,
+			Err:  errors.New(common.BSText(common.UserAlreadyExists)),
 		}
 	}
 
 	sum := sha256.Sum256([]byte(pw))
 	passHash := fmt.Sprintf("%x", sum)
 
-	user := User{
+	user := model.User{
 		Name:     name,
 		Password: passHash,
 	}
@@ -63,17 +53,13 @@ func (us *UserService) Register(name, pw string) (bool, error) {
 
 // 校验用户名密码，检验成功则生成token缓存到redis，同时缓存一份用户信息
 func (us *UserService) Login(name, pw string) (string, error) {
-	if name == "" || pw == "" {
-		return "", badReqErr("用户名/密码输入错误")
-	}
-
 	sum := sha256.Sum256([]byte(pw))
 	passHash := fmt.Sprintf("%x", sum)
 
-	var u User
+	var u model.User
 	MyDB.Where("name = ? and password = ?", name, passHash).First(&u)
 	if u.Name == "" || u.Name != name {
-		return "", badReqErr("用户名/密码输入错误")
+		return "", bsError(common.UserAccOrPassIncorrect)
 	}
 
 	// 取出旧Token
@@ -99,7 +85,7 @@ func (us *UserService) Login(name, pw string) (string, error) {
 		return "", err
 	}
 	// 缓存用户信息
-	userJson, err := json.Marshal(u)
+	userJson, err := json.Marshal(fromUserModel(&u))
 	if err != nil {
 		return "", err
 	}
@@ -112,33 +98,44 @@ func (us *UserService) Login(name, pw string) (string, error) {
 
 // 根据token查询用户缓存
 func (us *UserService) UserInfo(token string) (string, error) {
-	if token == "" {
-		return "", badReqErr("用户名/Token参数错误")
-	}
-
 	userCache, err := ReCli.Cli.Get(fmt.Sprintf(AdminInfoKey, token)).Result()
 	if err == redis.Nil {
-		return "", unAuthErr("Token无效 ")
+		return "", bsError(common.TokenInvalid)
 	} else if err != nil {
 		return "", err
 	}
 	if userCache == "" {
-		return "", unAuthErr("Token无效 " + token)
+		return "", bsError(common.TokenInvalid)
 	}
 
 	return userCache, nil
 }
 
-func badReqErr(msg string) error {
+func (l *UserService) QueryAdminUserList(page, limit uint32) (*[]UserVO, uint32, error) {
+	var users []model.User
+	var totalCount uint32
+	offset := (page - 1) * limit
+	MyDB.Offset(offset).Limit(limit).Find(&users).Offset(0).Count(&totalCount)
+
+	var userList []UserVO
+	for _, user := range users {
+		userList = append(userList, *fromUserModel(&user))
+	}
+
+	return &userList, totalCount, nil
+}
+
+func bsError(code int) error {
 	return common.StatusError{
-		Code: http.StatusBadRequest,
-		Err:  fmt.Errorf(msg),
+		Code: code,
+		Err:  errors.New(common.BSText(code)),
 	}
 }
 
-func unAuthErr(msg string) error {
-	return common.StatusError{
-		Code: http.StatusUnauthorized,
-		Err:  fmt.Errorf(msg),
+func fromUserModel(u *model.User) *UserVO {
+	return &UserVO{
+		Name:      u.Name,
+		Email:     u.Email,
+		AvatarURL: u.AvatarURL,
 	}
 }

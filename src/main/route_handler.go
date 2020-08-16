@@ -2,28 +2,28 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	. "github.com/joeyscat/ok-short/common"
+	"github.com/joeyscat/ok-short/model"
 	"github.com/joeyscat/ok-short/store"
 	"gopkg.in/validator.v2"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodOptions {
-		return
-	}
 	var req ShortenReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamPostBodyInvalid,
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamPostBodyInvalid,
 			Err: fmt.Errorf("%s %v", BSText(ParamPostBodyInvalid), err.Error())})
 		return
 	}
 	if err := validator.Validate(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamIllegal,
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamIllegal,
 			Err: fmt.Errorf("%s %v", BSText(ParamIllegal), err.Error())})
 		return
 	}
@@ -43,23 +43,17 @@ func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) getLinkInfo(w http.ResponseWriter, r *http.Request) {
 	values := r.URL.Query()
-	s := values.Get("short_url")
-	if s == "" {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamURLInvalid,
+	sc := values.Get("sc")
+	if sc == "" {
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamURLInvalid,
 			Err: fmt.Errorf(BSText(ParamURLInvalid))})
 	}
 
-	// fmt.Printf("get info: %s\n", s)
-	link, err := app.Config.API.LinkInfo(s)
+	link, err := app.Config.API.LinkInfo(sc)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 	} else {
-		link.Id = 0
-		respondWithJSON(w, http.StatusOK, Resp{
-			Code:    Success,
-			Message: BSText(Success),
-			Data:    LinkInfoRespData{Link: *link},
-		})
+		respondWithJSON(w, http.StatusOK, Resp{Code: Success, Message: BSText(Success), Data: link})
 	}
 }
 
@@ -71,7 +65,7 @@ func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, err)
 	} else {
 		// TODO 加入队列异步处理
-		l := getVisitedLog(r, sc)
+		l := getVisitedLog(r)
 		app.Config.API.StoreVisitedLog(l)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
@@ -103,17 +97,24 @@ func respondWithJSON(w http.ResponseWriter, statusCode int, payload Resp) {
 	w.Write(resp)
 }
 
-func getVisitedLog(r *http.Request, shortCode string) *LinkVisitedLog {
-	reqLog := LinkVisitedLog{
-		RemoteAddr: r.Header.Get("Remote_addr"),
-		ShortCode:  shortCode,
-		UA:         r.UserAgent(),
-		Cookie:     r.Header.Get("Cookie"),
-		VisitorId:  "0",
-		VisitedAt:  Now(),
+func getVisitedLog(r *http.Request) *model.LinkTrace {
+	reqLog := model.LinkTrace{
+		Sid:    Sid(),
+		Ip:     r.Header.Get("Remote_addr"),
+		URL:    getURL(r),
+		UA:     r.UserAgent(),
+		Cookie: r.Header.Get("Cookie"),
 	}
 	log.Printf("ReqLog: %+v\n", reqLog)
 	return &reqLog
+}
+
+func getURL(r *http.Request) string {
+	scheme := "http://"
+	if r.TLS != nil {
+		scheme = "https://"
+	}
+	return strings.Join([]string{scheme, r.Host, r.RequestURI}, "")
 }
 
 // --------------------------- admin ----------------------------
@@ -121,12 +122,17 @@ func getVisitedLog(r *http.Request, shortCode string) *LinkVisitedLog {
 func (app *App) register(w http.ResponseWriter, r *http.Request) {
 	var req RegisterReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamPostBodyInvalid,
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamPostBodyInvalid,
 			Err: fmt.Errorf("%s %v", BSText(ParamPostBodyInvalid), err.Error())})
 		return
 	}
+	if req.Name == "" || req.Password == "" {
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamPasswordEmpty,
+			Err: errors.New(BSText(ParamAccOrPassEmpty))})
+		return
+	}
 	if err := validator.Validate(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamIllegal,
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamIllegal,
 			Err: fmt.Errorf("%s %v", BSText(ParamIllegal), err.Error())})
 		return
 	}
@@ -146,27 +152,37 @@ func (app *App) register(w http.ResponseWriter, r *http.Request) {
 func (app *App) login(w http.ResponseWriter, r *http.Request) {
 	var req LoginReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamPostBodyInvalid,
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamPostBodyInvalid,
 			Err: fmt.Errorf("%s %v", BSText(ParamPostBodyInvalid), err.Error())})
 		return
 	}
+	if req.Name == "" || req.Password == "" {
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamPasswordEmpty,
+			Err: errors.New(BSText(ParamAccOrPassEmpty))})
+		return
+	}
 	if err := validator.Validate(req); err != nil {
-		respondWithError(w, http.StatusBadRequest, StatusError{Code: ParamIllegal,
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamIllegal,
 			Err: fmt.Errorf("%s %v", BSText(ParamIllegal), err.Error())})
 		return
 	}
 	defer r.Body.Close()
 	token, err := app.Config.ADMIN.Login(req.Name, req.Password)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err)
+		respondWithError(w, http.StatusOK, err)
 	} else {
 		respondWithJSON(w, http.StatusOK, Resp{Code: Success, Message: BSText(Success), Data: LoginRespData{Token: token}})
 	}
 }
 
-func (app *App) adminInfo(w http.ResponseWriter, r *http.Request) {
-	token := r.Header.Get("Authorization")
-
+func (app *App) adminUser(w http.ResponseWriter, r *http.Request) {
+	//token := r.Header.Get("Authorization")
+	token := r.URL.Query().Get("token")
+	if token == "" {
+		respondWithError(w, http.StatusOK, StatusError{Code: ParamTokenEmpty,
+			Err: errors.New(BSText(ParamTokenEmpty))})
+		return
+	}
 	userInfoStr, err := app.Config.ADMIN.UserInfo(token)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
@@ -174,23 +190,71 @@ func (app *App) adminInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	var user AdminInfoRespData
 	_ = json.Unmarshal([]byte(userInfoStr), &user)
+	// TODO hard code
+	user.Roles = append(user.Roles, "admin")
+	user.AvatarURL = "https://avatars3.githubusercontent.com/u/27766600?s=460&u=ac9809d85b4986bb38b85c1ec79bbebec476b574&v=4"
 	//userInfo, _ := json.Unmarshal(userInfoStr)
 	respondWithJSON(w, http.StatusOK, Resp{Code: Success, Message: BSText(Success), Data: user})
 }
 
-func (app *App) links(w http.ResponseWriter, r *http.Request) {
-	values := r.URL.Query()
-	page, _ := strconv.ParseInt(values.Get("page"), 10, 32)
-	size, _ := strconv.ParseInt(values.Get("size"), 10, 32)
+func (app *App) linkList(w http.ResponseWriter, r *http.Request) {
+	page, limit := getPageParams(r)
 
-	links, count, total, err := app.Config.ADMIN.QueryLinks(uint32(page), uint32(size))
+	links, totalCount, err := app.Config.ADMIN.QueryLinkList(page, limit)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
+	itemCount := len(*links)
 	respondWithJSON(w, http.StatusOK, Resp{
 		Code:    Success,
 		Message: BSText(Success),
-		Data:    QueryLinksRespData{Total: total, Count: count, Links: links},
+		Data:    QueryListRespData{TotalCount: totalCount, ItemCount: uint32(itemCount), Item: &links},
 	})
+}
+
+func (app *App) linkTraceList(w http.ResponseWriter, r *http.Request) {
+	page, limit := getPageParams(r)
+
+	traceList, totalCount, err := app.Config.ADMIN.QueryLinkTraceList(page, limit)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+	itemCount := len(*traceList)
+	respondWithJSON(w, http.StatusOK, Resp{
+		Code:    Success,
+		Message: BSText(Success),
+		Data:    QueryListRespData{TotalCount: totalCount, ItemCount: uint32(itemCount), Item: &traceList},
+	})
+}
+
+func (app *App) adminUserList(w http.ResponseWriter, r *http.Request) {
+	page, limit := getPageParams(r)
+
+	admins, totalCount, err := app.Config.ADMIN.QueryAdminUserList(page, limit)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+	itemCount := len(*admins)
+	respondWithJSON(w, http.StatusOK, Resp{
+		Code:    Success,
+		Message: BSText(Success),
+		Data:    QueryListRespData{TotalCount: totalCount, ItemCount: uint32(itemCount), Item: &admins},
+	})
+}
+
+func getPageParams(r *http.Request) (uint32, uint32) {
+	values := r.URL.Query()
+	page, _ := strconv.ParseInt(values.Get("page"), 10, 32)
+	limit, _ := strconv.ParseInt(values.Get("limit"), 10, 32)
+	// page>=1,20>=limit>=1
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 || limit > 20 {
+		limit = 20
+	}
+	return uint32(page), uint32(limit)
 }

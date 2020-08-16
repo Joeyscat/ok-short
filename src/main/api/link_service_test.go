@@ -3,13 +3,14 @@ package api
 import (
 	"fmt"
 	"log"
+	"strings"
 	"testing"
 )
 
 func TestShorten(t *testing.T) {
 	service := LinkService{}
 
-	url, err := service.Shorten("www.github.com", 30)
+	url, err := service.Shorten("http://solo.oook.fun/articles/2019/06/29/1575110024441.html", 30)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -19,7 +20,7 @@ func TestShorten(t *testing.T) {
 func TestLinkInfo(t *testing.T) {
 	service := LinkService{}
 
-	info, err := service.LinkInfo("Gq")
+	info, err := service.LinkInfo("XU")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,7 +30,7 @@ func TestLinkInfo(t *testing.T) {
 func TestUnShorten(t *testing.T) {
 	service := LinkService{}
 
-	originUrl, err := service.UnShorten("z")
+	originUrl, err := service.UnShorten("XU")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -39,19 +40,21 @@ func TestUnShorten(t *testing.T) {
 func TestAll(t *testing.T) {
 	service := LinkService{}
 
-	eid, err := service.Shorten("www.github.com", 30)
+	url, err := service.Shorten("http://solo.oook.fun/articles/2019/06/29/1575110024441.html", 30)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(eid)
+	split := strings.Split(url, "/")
+	sc := split[len(split)-1]
+	fmt.Println(sc)
 
-	info, err := service.LinkInfo(eid)
+	info, err := service.LinkInfo(sc)
 	if err != nil {
 		log.Fatal(err)
 	}
 	fmt.Println(info)
 
-	unShorten, err := service.UnShorten(eid)
+	unShorten, err := service.UnShorten(sc)
 	if err != nil {
 		log.Fatal(err)
 	}
