@@ -1,0 +1,41 @@
+# github.com/go-redis/redis v6.15.9+incompatible
+## explicit
+github.com/go-redis/redis
+github.com/go-redis/redis/internal
+github.com/go-redis/redis/internal/consistenthash
+github.com/go-redis/redis/internal/hashtag
+github.com/go-redis/redis/internal/pool
+github.com/go-redis/redis/internal/proto
+github.com/go-redis/redis/internal/util
+# github.com/go-sql-driver/mysql v1.5.0
+github.com/go-sql-driver/mysql
+# github.com/google/uuid v1.1.1
+github.com/google/uuid
+# github.com/gorilla/mux v1.7.4
+## explicit
+github.com/gorilla/mux
+# github.com/jinzhu/gorm v1.9.16
+## explicit
+github.com/jinzhu/gorm
+github.com/jinzhu/gorm/dialects/mysql
+# github.com/jinzhu/inflection v1.0.0
+github.com/jinzhu/inflection
+# github.com/justinas/alice v1.2.0
+## explicit
+github.com/justinas/alice
+# github.com/lithammer/shortuuid/v3 v3.0.4
+## explicit
+github.com/lithammer/shortuuid/v3
+# github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a
+## explicit
+github.com/mattheath/base62
+# github.com/onsi/ginkgo v1.14.0
+## explicit
+# github.com/stretchr/testify v1.4.0
+## explicit
+# github.com/teris-io/shortid v0.0.0-20171029131806-771a37caa5cf
+## explicit
+github.com/teris-io/shortid
+# gopkg.in/validator.v2 v2.0.0-20200605151824-2b28d334fa05
+## explicit
+gopkg.in/validator.v2
