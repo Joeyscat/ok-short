@@ -1,9 +1,9 @@
-package admin
+package ok_short_admin
 
 import (
-	. "github.com/joeyscat/ok-short/common"
-	. "github.com/joeyscat/ok-short/model"
-	. "github.com/joeyscat/ok-short/store"
+	"github.com/joeyscat/ok-short/internel/pkg"
+	. "github.com/joeyscat/ok-short/internel/pkg/common"
+	. "github.com/joeyscat/ok-short/internel/pkg/model"
 )
 
 type LinkService struct {
@@ -13,7 +13,7 @@ func (l *LinkService) QueryLinkList(page, limit uint32) (*[]LinkRespData, uint32
 	var list []Link
 	var totalCount uint32
 	offset := (page - 1) * limit
-	MyDB.Offset(offset).Limit(limit).Find(&list).Offset(0).Count(&totalCount)
+	pkg.MyDB.Offset(offset).Limit(limit).Find(&list).Offset(0).Count(&totalCount)
 
 	var respList []LinkRespData
 	for _, item := range list {
@@ -28,7 +28,7 @@ func (l *LinkService) QueryLinkTraceList(page, limit uint32) (*[]LinkTraceRespDa
 	var list []LinkTrace
 	var totalCount uint32
 	offset := (page - 1) * limit
-	MyDB.Offset(offset).Limit(limit).Find(&list).Offset(0).Count(&totalCount)
+	pkg.MyDB.Offset(offset).Limit(limit).Find(&list).Offset(0).Count(&totalCount)
 
 	var respList []LinkTraceRespData
 	for _, item := range list {
@@ -42,7 +42,7 @@ func (l *LinkService) QueryLinkTraceList(page, limit uint32) (*[]LinkTraceRespDa
 func fromLinkModel(l *Link) *LinkRespData {
 	return &LinkRespData{
 		Sid:       l.Sid,
-		URL:       LinkPrefix + l.Sc,
+		URL:       pkg.LinkPrefix + l.Sc,
 		Status:    l.Status,
 		Name:      l.Name,
 		OriginURL: l.OriginURL,

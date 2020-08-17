@@ -1,13 +1,13 @@
-package main
+package app
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
-	. "github.com/joeyscat/ok-short/common"
-	"github.com/joeyscat/ok-short/model"
-	"github.com/joeyscat/ok-short/store"
+	"github.com/joeyscat/ok-short/internel/pkg"
+	. "github.com/joeyscat/ok-short/internel/pkg/common"
+	"github.com/joeyscat/ok-short/internel/pkg/model"
 	"gopkg.in/validator.v2"
 	"log"
 	"net/http"
@@ -29,14 +29,14 @@ func (app *App) createLink(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	s, err := app.Config.API.Shorten(req.URL, req.ExpirationInMinutes)
+	s, err := app.Context.API.Shorten(req.URL, req.ExpirationInMinutes)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 	} else {
 		respondWithJSON(w, http.StatusCreated, Resp{
 			Code:    Success,
 			Message: BSText(Success),
-			Data:    ShortenRespData{Link: store.LinkPrefix + s},
+			Data:    ShortenRespData{Link: pkg.LinkPrefix + s},
 		})
 	}
 }
@@ -49,7 +49,7 @@ func (app *App) getLinkInfo(w http.ResponseWriter, r *http.Request) {
 			Err: fmt.Errorf(BSText(ParamURLInvalid))})
 	}
 
-	link, err := app.Config.API.LinkInfo(sc)
+	link, err := app.Context.API.LinkInfo(sc)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 	} else {
@@ -60,13 +60,13 @@ func (app *App) getLinkInfo(w http.ResponseWriter, r *http.Request) {
 func (app *App) redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	sc := vars["url"]
-	url, err := app.Config.API.UnShorten(sc)
+	url, err := app.Context.API.UnShorten(sc)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 	} else {
 		// TODO 加入队列异步处理
 		l := getVisitedLog(r)
-		app.Config.API.StoreVisitedLog(l)
+		app.Context.API.StoreVisitedLog(l)
 		http.Redirect(w, r, url, http.StatusTemporaryRedirect)
 	}
 }
@@ -137,7 +137,7 @@ func (app *App) register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	success, err := app.Config.ADMIN.Register(req.Name, req.Password)
+	success, err := app.Context.ADMIN.Register(req.Name, req.Password)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 	} else {
@@ -167,7 +167,7 @@ func (app *App) login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	token, err := app.Config.ADMIN.Login(req.Name, req.Password)
+	token, err := app.Context.ADMIN.Login(req.Name, req.Password)
 	if err != nil {
 		respondWithError(w, http.StatusOK, err)
 	} else {
@@ -183,7 +183,7 @@ func (app *App) adminUser(w http.ResponseWriter, r *http.Request) {
 			Err: errors.New(BSText(ParamTokenEmpty))})
 		return
 	}
-	userInfoStr, err := app.Config.ADMIN.UserInfo(token)
+	userInfoStr, err := app.Context.ADMIN.UserInfo(token)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 		return
@@ -200,7 +200,7 @@ func (app *App) adminUser(w http.ResponseWriter, r *http.Request) {
 func (app *App) linkList(w http.ResponseWriter, r *http.Request) {
 	page, limit := getPageParams(r)
 
-	links, totalCount, err := app.Config.ADMIN.QueryLinkList(page, limit)
+	links, totalCount, err := app.Context.ADMIN.QueryLinkList(page, limit)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 		return
@@ -216,7 +216,7 @@ func (app *App) linkList(w http.ResponseWriter, r *http.Request) {
 func (app *App) linkTraceList(w http.ResponseWriter, r *http.Request) {
 	page, limit := getPageParams(r)
 
-	traceList, totalCount, err := app.Config.ADMIN.QueryLinkTraceList(page, limit)
+	traceList, totalCount, err := app.Context.ADMIN.QueryLinkTraceList(page, limit)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 		return
@@ -232,7 +232,7 @@ func (app *App) linkTraceList(w http.ResponseWriter, r *http.Request) {
 func (app *App) adminUserList(w http.ResponseWriter, r *http.Request) {
 	page, limit := getPageParams(r)
 
-	admins, totalCount, err := app.Config.ADMIN.QueryAdminUserList(page, limit)
+	admins, totalCount, err := app.Context.ADMIN.QueryAdminUserList(page, limit)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err)
 		return

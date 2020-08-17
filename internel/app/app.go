@@ -1,6 +1,7 @@
-package main
+package app
 
 import (
+	"github.com/joeyscat/ok-short/internel/pkg"
 	"log"
 	"net/http"
 
@@ -8,19 +9,19 @@ import (
 	"github.com/justinas/alice"
 )
 
-// App encapsulates Env, Router and middleware
+// App encapsulates Context, Router and middleware
 type App struct {
 	Router     *mux.Router
-	Middleware *Middleware
-	Config     *Env
+	Middleware *pkg.Middleware
+	Context    *Context
 }
 
 // Initialize is initialization of app
-func (app *App) Initialize(env *Env) {
+func (app *App) Initialize(c *Context) {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	app.Config = env
+	app.Context = c
 	app.Router = mux.NewRouter()
-	app.Middleware = &Middleware{}
+	app.Middleware = &pkg.Middleware{}
 
 	app.initializeRoutes()
 }

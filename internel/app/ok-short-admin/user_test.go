@@ -1,7 +1,6 @@
-package admin
+package ok_short_admin
 
 import (
-	. "github.com/joeyscat/ok-short/store"
 	"log"
 	"testing"
 )
@@ -48,7 +47,6 @@ func TestUserService_Registry(t *testing.T) {
 
 func TestUserService_Login(t *testing.T) {
 	type fields struct {
-		R RedisCli
 	}
 	type args struct {
 		name string

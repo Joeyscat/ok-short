@@ -1,6 +1,7 @@
-package store
+package pkg
 
 import (
+	"github.com/go-redis/redis"
 	. "github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"log"
@@ -18,8 +19,8 @@ var (
 
 	LinkPrefix = "http://sc.vaiwan.com/"
 
-	ReCli = RedisCli{} // Redis存储
-	MyDB  = &DB{}      // MySQL存储
+	ReCli = &redis.Client{} // Redis存储
+	MyDB  = &DB{}           // MySQL存储
 )
 
 func init() {
@@ -65,7 +66,14 @@ func init() {
 	log.Printf("connect to redis [addr: %s password: %s db: %d]\n", RedisAddr, RedisPassWord, RedisDB)
 	log.Printf("connect to mysql [%s]\n", DataSourceName)
 
-	ReCli = *NewRedisCli(RedisAddr, RedisPassWord, RedisDB)
+	ReCli = redis.NewClient(&redis.Options{
+		Addr:     RedisAddr,
+		Password: RedisPassWord,
+		DB:       RedisDB,
+	})
+	if _, err := ReCli.Ping().Result(); err != nil {
+		panic(err)
+	}
 
 	db, err := Open(DriverName, DataSourceName)
 	if err != nil {
@@ -75,3 +83,13 @@ func init() {
 	db.LogMode(true)
 	MyDB = db
 }
+
+const (
+	// URLIdKey redis自增主键所用的key
+	URLIdKey = "next.url.id"
+	// LinkKey 用于保存短链与原始链接的映射
+	LinkKey = "link:%s:url"
+
+	AdminTokenKey = "admin:%s:token"
+	AdminInfoKey  = "admin:%s:info"
+)

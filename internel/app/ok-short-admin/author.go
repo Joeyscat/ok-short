@@ -1,4 +1,4 @@
-package admin
+package ok_short_admin
 
 // 短链作者
 type AuthorService struct {

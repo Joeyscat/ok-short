@@ -152,9 +152,10 @@ FROM ok_link_admin_user
 ORDER BY id DESC;
 # https://avatars3.githubusercontent.com/u/27766600?s=460&u=ac9809d85b4986bb38b85c1ec79bbebec476b574&v=4
 
-
+SELECT * FROM `ok_link_admin_user`  WHERE `ok_link_admin_user`.`deleted_at` IS NULL LIMIT 20 OFFSET 0;
 # DELETE
 DELETE FROM ok_link WHERE 1=1;
 DELETE FROM ok_link_trace WHERE 1=1;
+DELETE FROM ok_link_admin_user WHERE name != 'admin';
 
 # TODO 云服务器MySQL时区问题

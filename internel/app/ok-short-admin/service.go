@@ -1,4 +1,4 @@
-package admin
+package ok_short_admin
 
 type Service struct {
 	// 用户管理
@@ -7,6 +7,4 @@ type Service struct {
 	UserService
 	// 短链管理
 	LinkService
-	// 短链访问管理
-	VisitorService
 }

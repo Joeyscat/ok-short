@@ -1,5 +1,5 @@
 ok-short
 .vscode
-src/main/go.sum
+go.sum
 
 .idea

@@ -44,5 +44,5 @@ func Now() time.Time {
 }
 
 func ShortUUID() string {
-	return shortuuid.NewWithNamespace("http://example.com")
+	return shortuuid.NewWithNamespace("http://oook.fun")
 }
