@@ -1,32 +1,46 @@
-
+## 项目结构
 ```bash
-└── src
-    └── main
-        ├── admin # 后台管理相关
-        │   ├── creator_service.go
-        │   ├── link_service.go
-        │   ├── README.md
-        │   ├── service.go
-        │   └── visitor_service.go
-        ├── api # 短链服务相关
-        │   ├── link_service.go
-        │   ├── link_service_test.go
-        │   └── service.go
-        ├── app.go
-        ├── common # 通用代码
-        │   ├── error.go
-        │   ├── link.go
-        │   └── utils.go
-        ├── env.go
-        ├── go.mod
-        ├── go.sum
-        ├── main.go # 程序入口
-        ├── middleware.go
-        ├── route_handler.go
-        ├── shorten_view_model.go
-        └── store # 存储相关
-            ├── mysql.go
-            ├── mysql_test.go
-            └── redis.go
-
+.
+├── api # 接口/协议
+│   ├── link.go
+│   ├── link.pb.go
+│   ├── link.proto
+│   ├── link_test.go
+│   └── plugin.go
+├── cmd # 程序入口
+│   └── ok-short
+│       ├── main.go
+│       └── ok-short
+├── go.mod
+├── go.sum
+├── internel # 内部代码
+│   ├── app
+│   │   ├── app.go
+│   │   ├── context.go
+│   │   ├── ok-short # 服务实现
+│   │   │   ├── link.go
+│   │   │   ├── link_test.go
+│   │   │   └── service.go
+│   │   ├── ok-short-admin # 后台管理
+│   │   │   ├── author.go
+│   │   │   ├── link.go
+│   │   │   ├── service.go
+│   │   │   ├── user.go
+│   │   │   └── user_test.go
+│   │   └── route_handler.go
+│   └── pkg # 通用代码
+│       ├── common
+│       │   ├── error.go
+│       │   ├── status.go
+│       │   ├── utils.go
+│       │   └── view_model.go
+│       ├── middleware.go
+│       ├── model
+│       │   ├── link.go
+│       │   └── user.go
+│       └── store.go
+├── README.md
+├── scripts # 脚本
+│   └── db.sql
+└── vendor # 第三方库
 ```
