@@ -5,6 +5,11 @@ import (
 	"github.com/joeyscat/ok-short/pkg/app"
 )
 
+const (
+	StatueOpen  = "已启用"
+	StatueClose = "已禁用"
+)
+
 // Link 短链结构体
 type Link struct { // TODO
 	*Model
@@ -34,29 +39,24 @@ type Group struct {
 type Trace struct {
 }
 
-type LinkTrace struct {
-	gorm.Model
-	Sid    string
-	URL    string `gorm:"url"`
-	Ip     string `gorm:"ip"`
-	UA     string `gorm:"ua"`
-	Cookie string `gorm:"cookie"`
-}
-
-func (LinkTrace) TableName() string {
-	return "ok_link_trace"
-}
-
 type LinkSwagger struct {
 	List  []*Link
 	Pager *app.Pager
 }
 
-func (l *Link) Create(db *gorm.DB) error {
-	return db.Create(&l).Error
+func (l Link) Create(db *gorm.DB) (*Link, error) {
+	if err := db.Create(&l).Error; err != nil {
+		return nil, err
+	}
+	return &l, nil
 }
 
-func (l *Link) Find(db *gorm.DB) *Link {
-	db.Find(&l)
-	return l
+func (l Link) GetBySc(db *gorm.DB) (*Link, error) {
+	var link Link
+	db = db.Where("sc = ? AND status = ?", l.Sc, StatueOpen)
+	err := db.First(&link).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+	return &link, nil
 }

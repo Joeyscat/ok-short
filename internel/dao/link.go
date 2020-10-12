@@ -5,11 +5,11 @@ import (
 	"github.com/joeyscat/ok-short/pkg/app"
 )
 
-func (d *Dao) CreateLink(sc string, originalURL string, exp uint32) error {
+func (d *Dao) CreateLink(sc string, originalURL string, exp uint32) (*model.Link, error) {
 	link := &model.Link{
 		Sid:       app.Sid(),
 		Sc:        sc,
-		Status:    "已启用",
+		Status:    model.StatueOpen,
 		Name:      "",
 		OriginURL: originalURL,
 		CreatedBy: 0,
@@ -18,9 +18,9 @@ func (d *Dao) CreateLink(sc string, originalURL string, exp uint32) error {
 	return link.Create(d.engine)
 }
 
-func (d *Dao) GetLink(sc string) *model.Link {
+func (d *Dao) GetLink(sc string) (*model.Link, error) {
 	link := &model.Link{
 		Sc: sc,
 	}
-	return link.Find(d.engine)
+	return link.GetBySc(d.engine)
 }

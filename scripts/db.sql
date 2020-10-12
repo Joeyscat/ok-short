@@ -55,11 +55,11 @@ DROP TABLE IF EXISTS `ok_link_trace`;
 CREATE TABLE `ok_link_trace`
 (
     `id`         INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `sid`        VARCHAR(10)
+    `sc`        VARCHAR(10)
                      CHARACTER SET utf8mb4
                          COLLATE utf8mb4_bin # 大小写敏感
                                   NOT NULL,
-    `url` VARCHAR(30)     Not NULL,
+    `url`        VARCHAR(255)      Not NULL,
     `ip`         VARCHAR(32)      Not NULL,
     `ua`         VARCHAR(500)     Not NULL,
     `cookie`     VARCHAR(500)     Not NULL,
@@ -71,8 +71,6 @@ CREATE TABLE `ok_link_trace`
   AUTO_INCREMENT = 1
   COLLATE = utf8mb4_unicode_ci
   DEFAULT CHARSET = utf8mb4;
-ALTER TABLE ok_link
-    ADD UNIQUE (`sid`);
 
 # -------------------短链作者(服务用户)--------------
 DROP TABLE IF EXISTS `ok_link_author`;
@@ -94,6 +92,24 @@ CREATE TABLE `ok_link_author`
   AUTO_INCREMENT = 1
   COLLATE = utf8mb4_unicode_ci
   DEFAULT CHARSET = utf8mb4;
+
+# -------------------用户授权信息表--------------
+DROP TABLE IF EXISTS `ok_link_user_auth`;
+CREATE TABLE `ok_link_user_auth`
+(
+    `id`            INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `user_id`       INT(10) UNSIGNED NOT NULL,
+    `identity_type` INT(2) UNSIGNED  NOT NULL,
+    `identifier`    VARCHAR(64)      Not NULL,
+    `credential`    VARCHAR(100)     Not NULL,
+    `created_at`    TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    `updated_at`    TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    PRIMARY KEY (`id`)
+) ENGINE = INNODB
+  AUTO_INCREMENT = 1
+  COLLATE = utf8mb4_unicode_ci
+  DEFAULT CHARSET = utf8mb4;
+
 
 # -------------------后台管理人员--------------
 DROP TABLE IF EXISTS `ok_link_admin_user`;
@@ -152,10 +168,19 @@ FROM ok_link_admin_user
 ORDER BY id DESC;
 # https://avatars3.githubusercontent.com/u/27766600?s=460&u=ac9809d85b4986bb38b85c1ec79bbebec476b574&v=4
 
-SELECT * FROM `ok_link_admin_user`  WHERE `ok_link_admin_user`.`deleted_at` IS NULL LIMIT 20 OFFSET 0;
+SELECT *
+FROM `ok_link_admin_user`
+WHERE `ok_link_admin_user`.`deleted_at` IS NULL
+LIMIT 20 OFFSET 0;
 # DELETE
-DELETE FROM ok_link WHERE 1=1;
-DELETE FROM ok_link_trace WHERE 1=1;
-DELETE FROM ok_link_admin_user WHERE name != 'admin';
+DELETE
+FROM ok_link
+WHERE 1 = 1;
+DELETE
+FROM ok_link_trace
+WHERE 1 = 1;
+DELETE
+FROM ok_link_admin_user
+WHERE name != 'admin';
 
 # TODO 云服务器MySQL时区问题

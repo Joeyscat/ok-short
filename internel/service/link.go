@@ -29,7 +29,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	}
 	// 存储原链接与短链接代码的映射
 	// TODO 定时清理过期数据
-	err = svc.dao.CreateLink(sc, param.URL, param.ExpirationInMinutes)
+	_, err = svc.dao.CreateLink(sc, param.URL, param.ExpirationInMinutes)
 	if err != nil {
 		return "", err
 	}
@@ -38,7 +38,10 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 }
 
 func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
-	link := svc.dao.GetLink(param.Sc)
+	link, err := svc.dao.GetLink(param.Sc)
+	if err != nil {
+		return "", err
+	}
 	return link.OriginURL, nil
 }
 

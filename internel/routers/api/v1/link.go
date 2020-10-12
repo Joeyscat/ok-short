@@ -54,7 +54,8 @@ func (t Link) Shorten(c *gin.Context) {
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/links/{id} [delete]
 func (t Link) Redirect(c *gin.Context) {
-	param := service.RedirectLinkRequest{Sc: c.Param("sc")}
+	sc := c.Param("sc")
+	param := service.RedirectLinkRequest{Sc: sc}
 	response := app.NewResponse(c)
 	valid, errs := app.BindAndValid(c, &param)
 	if !valid {
@@ -70,6 +71,9 @@ func (t Link) Redirect(c *gin.Context) {
 		response.ToErrorResponse(errcode.ErrorCreateLinkFail)
 		return
 	}
+
+	// save visit log
+	svc.CreateLinkTrace(sc, link, c)
 
 	c.Redirect(http.StatusTemporaryRedirect, link)
 }
