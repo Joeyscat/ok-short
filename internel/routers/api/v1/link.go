@@ -68,7 +68,7 @@ func (t Link) Redirect(c *gin.Context) {
 	link, err := svc.UnShorten(&param)
 	if err != nil {
 		global.Logger.Errorf("svc.UnShorten err: %v", err)
-		response.ToErrorResponse(errcode.ErrorCreateLinkFail)
+		response.ToErrorResponse(errcode.ErrorUnShortLinkFail)
 		return
 	}
 
@@ -76,4 +76,43 @@ func (t Link) Redirect(c *gin.Context) {
 	svc.CreateLinkTrace(sc, link, c)
 
 	c.Redirect(http.StatusTemporaryRedirect, link)
+}
+
+func (t Link) Get(c *gin.Context) {
+	sc := c.Param("sc")
+	param := service.GetLinkRequest{Sc: sc}
+	response := app.NewResponse(c)
+	valid, errs := app.BindAndValid(c, &param)
+	if !valid {
+		global.Logger.Errorf("app.BindAndValid errs: %v", errs)
+		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
+		return
+	}
+
+	svc := service.New(c.Request.Context())
+	link, err := svc.GetLink(&param)
+	if err != nil {
+		global.Logger.Errorf("svc.GetLink err: %v", err)
+		response.ToErrorResponse(errcode.ErrorGetLinkFail)
+		return
+	}
+
+	response.ToResponse(gin.H{"link": link, "code": 0})
+	return
+}
+
+func (t Link) List(c *gin.Context) {
+	response := app.NewResponse(c)
+	svc := service.New(c.Request.Context())
+
+	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
+	link, err := svc.GetLinkList(&pager)
+	if err != nil {
+		global.Logger.Errorf("svc.GetLinkList err: %v", err)
+		response.ToErrorResponse(errcode.ErrorGetLinkListFail)
+		return
+	}
+
+	response.ToResponse(gin.H{"link": link, "code": 0})
+	return
 }

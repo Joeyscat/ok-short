@@ -60,3 +60,17 @@ func (l Link) GetBySc(db *gorm.DB) (*Link, error) {
 	}
 	return &link, nil
 }
+
+func (l Link) List(db *gorm.DB, status string, pageOffset, pageSize int) ([]*Link, error) {
+	var links []*Link
+	var err error
+	if pageOffset >= 0 && pageSize > 0 {
+		db = db.Offset(pageOffset).Limit(pageSize)
+	}
+	db = db.Where("status = ?", status)
+	if err = db.Find(&links).Error; err != nil {
+		return nil, err
+	}
+
+	return links, nil
+}

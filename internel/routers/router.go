@@ -42,6 +42,8 @@ func NewRouter() *gin.Engine {
 	{
 		// 创建短链接
 		apiV1.POST("/shorten", link.Shorten)
+		apiV1.GET("/links/:sc", link.Get)
+		apiV1.GET("/links", link.List)
 	}
 
 	return r

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/joeyscat/ok-short/internel/model"
 	"github.com/joeyscat/ok-short/internel/pkg"
 	"github.com/joeyscat/ok-short/pkg/app"
 	"time"
@@ -10,6 +11,10 @@ import (
 type CreateLinkRequest struct {
 	URL                 string `json:"url" form:"url" binding:"required,min=20,max=200"`
 	ExpirationInMinutes uint32 `json:"expiration_in_minutes" form:"created_by" binding:"min=0,max=1440"`
+}
+
+type GetLinkRequest struct {
+	Sc string `json:"sc" form:"sc" binding:"required"`
 }
 
 type RedirectLinkRequest struct {
@@ -43,6 +48,23 @@ func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
 		return "", err
 	}
 	return link.OriginURL, nil
+}
+
+func (svc *Service) GetLink(param *GetLinkRequest) (*model.Link, error) {
+	link, err := svc.dao.GetLink(param.Sc)
+	if err != nil {
+		return nil, err
+	}
+	return link, nil
+}
+
+func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
+	link, err := svc.dao.GetLinkList(model.StatueOpen, pager.Page, pager.PageSize)
+	if err != nil {
+		return nil, err
+	}
+	// DO -> VO
+	return link, nil
 }
 
 func genId() (int64, error) {
