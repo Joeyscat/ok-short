@@ -1,0 +1,183 @@
+definitions:
+  app.Pager:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_rows:
+        type: integer
+    type: object
+  errcode.Error:
+    type: object
+  model.Group:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      sid:
+        type: string
+    type: object
+  model.Link:
+    properties:
+      createdBy:
+        type: integer
+      exp:
+        type: integer
+      group:
+        $ref: '#/definitions/model.Group'
+        description: 分组
+        type: object
+      name:
+        type: string
+      originURL:
+        description: 原始链接
+        type: string
+      pv:
+        $ref: '#/definitions/model.Trace'
+        type: object
+      sc:
+        description: 短链代码
+        type: string
+      sid:
+        description: 业务标识
+        type: string
+      status:
+        type: string
+    type: object
+  model.LinkSwagger:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/model.Link'
+        type: array
+      pager:
+        $ref: '#/definitions/app.Pager'
+        type: object
+    type: object
+  model.Trace:
+    type: object
+info:
+  contact: {}
+  description: GoGo
+  license: {}
+  termsOfService: mm
+  title: 短链接服务
+  version: "1.0"
+paths:
+  /api/v1/links:
+    get:
+      parameters:
+      - description: 创建者ID
+        in: query
+        name: created_by
+        type: integer
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.LinkSwagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取多个短链接
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 长链接
+        in: path
+        maxLength: 100
+        minLength: 10
+        name: url
+        required: true
+        type: string
+      - default: 1440
+        description: 有效时间
+        in: path
+        name: expiration_in_minutes
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.Link'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 新增短链接
+  /api/v1/links/{id}:
+    delete:
+      parameters:
+      - description: 短链接ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 短链接跳转
+    get:
+      parameters:
+      - description: 短链ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.Link'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取单个短链详情
+swagger: "2.0"

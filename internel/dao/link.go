@@ -25,9 +25,10 @@ func (d *Dao) GetLink(sc string) (*model.Link, error) {
 	return link.GetBySc(d.engine)
 }
 
-func (d *Dao) GetLinkList(status string, page, pageSize int) ([]*model.Link, error) {
+func (d *Dao) GetLinkList(createdBy uint32, status string, page, pageSize int) ([]*model.Link, error) {
 	link := &model.Link{
-		Status: status,
+		CreatedBy: createdBy,
+		Status:    status,
 	}
 	return link.List(d.engine, status, app.GetPageOffset(page, pageSize), pageSize)
 }

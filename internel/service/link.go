@@ -59,7 +59,10 @@ func (svc *Service) GetLink(param *GetLinkRequest) (*model.Link, error) {
 }
 
 func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
-	link, err := svc.dao.GetLinkList(model.StatueOpen, pager.Page, pager.PageSize)
+	var createdBy uint32 = 0
+	// TODO 当前用户，来源：1.提交参数 2.Token识别（当这两种方式获取不到时，取0值，查询会跳过这个条件）
+
+	link, err := svc.dao.GetLinkList(createdBy, model.StatueOpen, pager.Page, pager.PageSize)
 	if err != nil {
 		return nil, err
 	}

@@ -67,6 +67,9 @@ func (l Link) List(db *gorm.DB, status string, pageOffset, pageSize int) ([]*Lin
 	if pageOffset >= 0 && pageSize > 0 {
 		db = db.Offset(pageOffset).Limit(pageSize)
 	}
+	if l.CreatedBy != 0 {
+		db = db.Where("created_by = ?", l.CreatedBy)
+	}
 	db = db.Where("status = ?", status)
 	if err = db.Find(&links).Error; err != nil {
 		return nil, err
