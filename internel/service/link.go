@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internel/model"
 	"github.com/joeyscat/ok-short/internel/pkg"
 	"github.com/joeyscat/ok-short/pkg/app"
@@ -28,7 +29,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	url := pkg.LinkPrefix + sc
 
 	expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
-	err = pkg.ReCli.Set(fmt.Sprintf(pkg.LinkKey, sc), param.URL, expiration).Err()
+	err = global.Redis.Set(fmt.Sprintf(pkg.LinkKey, sc), param.URL, expiration).Err()
 	if err != nil {
 		return "", err
 	}
@@ -43,11 +44,16 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 }
 
 func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
-	link, err := svc.dao.GetLink(param.Sc)
+	link, err := pkg.ReCli.Get(fmt.Sprintf(pkg.LinkKey, param.Sc)).Result()
 	if err != nil {
 		return "", err
 	}
-	return link.OriginURL, nil
+	return link, nil
+	//link, err := svc.dao.GetLink(param.Sc)
+	//if err != nil {
+	//	return "", err
+	//}
+	//return link.OriginURL, nil
 }
 
 func (svc *Service) GetLink(param *GetLinkRequest) (*model.Link, error) {
@@ -73,13 +79,13 @@ func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
 func genId() (int64, error) {
 	// TODO should lock #1 begin
 	// increase the global counter
-	err := pkg.ReCli.Incr(pkg.URLIdKey).Err()
+	err := global.Redis.Incr(pkg.URLIdKey).Err()
 	if err != nil {
 		return -1, err
 	}
 
 	// encode global counter to base62
-	id, err := pkg.ReCli.Get(pkg.URLIdKey).Int64()
+	id, err := global.Redis.Get(pkg.URLIdKey).Int64()
 	if err != nil {
 		return -1, err
 	}
