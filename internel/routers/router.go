@@ -28,6 +28,7 @@ func NewRouter() *gin.Engine {
 	r.Use(middleware.Translations())
 
 	link := v1.NewLink()
+	linkTrace := v1.NewLinkTrace()
 	//upload := api.NewUpload()
 	//r.GET("/debug/vars", api.Expvar)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -44,6 +45,9 @@ func NewRouter() *gin.Engine {
 		apiV1.POST("/shorten", link.Shorten)
 		apiV1.GET("/links/:sc", link.Get)
 		apiV1.GET("/links", link.List)
+
+		apiV1.GET("/link-trace/:sc", linkTrace.Get)
+		apiV1.GET("/link-trace", linkTrace.List)
 	}
 
 	return r

@@ -9,11 +9,12 @@ var (
 	ErrorUnShortLinkFail = NewError(20010006, "还原短链接失败")
 	ErrorGetLinkFail     = NewError(20010007, "获取短链接失败")
 
-	ErrorGetArticleFail    = NewError(20020001, "获取单个文章失败")
-	ErrorGetArticlesFail   = NewError(20020002, "获取多个文章失败")
-	ErrorCreateArticleFail = NewError(20020003, "创建文章失败")
-	ErrorUpdateArticleFail = NewError(20020004, "更新文章失败")
-	ErrorDeleteArticleFail = NewError(20020005, "删除文章失败")
+	ErrorGetLinkTraceListFail = NewError(20020001, "获取短链接访问记录列表失败")
+	ErrorCreateLinkTraceFail  = NewError(20020002, "创建短链接访问记录失败")
+	ErrorUpdateLinkTraceFail  = NewError(20020003, "更新短链接访问记录失败")
+	ErrorDeleteLinkTraceFail  = NewError(20020004, "删除短链接访问记录失败")
+	ErrorCountLinkTraceFail   = NewError(20020005, "统计短链接访问记录失败")
+	ErrorGetLinkTraceFail     = NewError(20020007, "获取短链接访问记录失败")
 
 	ErrorUploadFileFail = NewError(20030001, "上传文件失败")
 )

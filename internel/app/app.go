@@ -38,7 +38,7 @@ func (app *App) initializeRoutes() {
 	app.Router.Handle("/admin-api/user/login", m.ThenFunc(app.login)).Methods(http.MethodPost, http.MethodOptions)
 	app.Router.Handle("/admin-api/user/info", m.ThenFunc(app.adminUser)).Methods(http.MethodGet, http.MethodOptions)
 	app.Router.Handle("/admin-api/user/list", m.ThenFunc(app.adminUserList)).Methods(http.MethodGet, http.MethodOptions)
-	app.Router.Handle("/admin-api/link/list", m.ThenFunc(app.linkList)).Methods(http.MethodGet, http.MethodOptions)
+	//app.Router.Handle("/admin-api/link/list", m.ThenFunc(app.linkList)).Methods(http.MethodGet, http.MethodOptions)
 	app.Router.Handle("/admin-api/link/trace/list", m.ThenFunc(app.linkTraceList)).Methods(http.MethodGet, http.MethodOptions)
 
 	app.Router.Handle("/{url:[a-zA-Z0-9]{1,11}}", m.ThenFunc(app.redirect)).Methods(http.MethodGet)

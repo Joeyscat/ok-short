@@ -29,8 +29,23 @@ func (lt LinkTrace) Get(db *gorm.DB) (*LinkTrace, error) {
 	return &lt, nil
 }
 
-func (lt LinkTrace) ListBySc(db *gorm.DB, sc string) ([]*LinkTrace, error) {
-	return nil, nil
+func (lt LinkTrace) List(db *gorm.DB, pageOffset, pageSize int) ([]*LinkTrace, error) {
+	var traces []*LinkTrace
+	var err error
+	if pageOffset >= 0 && pageSize > 0 {
+		db = db.Offset(pageOffset).Limit(pageSize)
+	}
+	if lt.Sc != "" {
+		db = db.Where("sc = ?", lt.Sc)
+	}
+	if lt.URL != "" {
+		db = db.Where("url = ?", lt.URL)
+	}
+	if err = db.Find(&traces).Error; err != nil {
+		return nil, err
+	}
+
+	return traces, nil
 }
 
 func (lt LinkTrace) ListByURL(db *gorm.DB, url string) ([]*LinkTrace, error) {
