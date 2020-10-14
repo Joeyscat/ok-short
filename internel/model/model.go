@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"github.com/go-redis/redis"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/pkg/setting"
 	"time"
@@ -103,4 +104,13 @@ func addExtraSpaceIfExist(str string) string {
 		return " " + str
 	}
 	return ""
+}
+
+func NewRedis(s *setting.RedisSettingS) *redis.Client {
+	client := redis.NewClient(&redis.Options{
+		Addr:     s.Addr,
+		Password: s.Password,
+		DB:       s.DB,
+	})
+	return client
 }

@@ -1,6 +1,8 @@
 package setting
 
-import "time"
+import (
+	"time"
+)
 
 type ServerSettingS struct {
 	RunMode      string
@@ -28,6 +30,12 @@ type DatabaseSettingS struct {
 	ParseTime    bool
 	MaxIdleConns int
 	MaxOpenConns int
+}
+
+type RedisSettingS struct {
+	Addr     string
+	Password string
+	DB       int
 }
 
 func (s *Setting) ReadSection(k string, v interface{}) error {

@@ -9,7 +9,7 @@ func (d *Dao) CreateLinkTrace(sc, url, ip, ua, cookies string) (*model.LinkTrace
 	l := &model.LinkTrace{
 		Model:  nil,
 		Sc:     sc,
-		URL:    url, // TODO remove
+		URL:    url,
 		Ip:     ip,
 		UA:     ua,
 		Cookie: cookies,

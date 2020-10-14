@@ -29,7 +29,7 @@ func (t Link) Shorten(c *gin.Context) {
 	response := app.NewResponse(c)
 	valid, errs := app.BindAndValid(c, &param)
 	if !valid {
-		global.Logger.Errorf("app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(c, "app.BindAndValid errs: %v", errs)
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
@@ -37,7 +37,7 @@ func (t Link) Shorten(c *gin.Context) {
 	svc := service.New(c.Request.Context())
 	link, err := svc.CreateLink(&param)
 	if err != nil {
-		global.Logger.Errorf("svc.CreateLink err: %v", err)
+		global.Logger.Errorf(c, "svc.CreateLink err: %v", err)
 		response.ToErrorResponse(errcode.ErrorCreateLinkFail)
 		return
 	}
@@ -59,7 +59,7 @@ func (t Link) Redirect(c *gin.Context) {
 	response := app.NewResponse(c)
 	valid, errs := app.BindAndValid(c, &param)
 	if !valid {
-		global.Logger.Errorf("app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(c, "app.BindAndValid errs: %v", errs)
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
@@ -67,7 +67,7 @@ func (t Link) Redirect(c *gin.Context) {
 	svc := service.New(c.Request.Context())
 	link, err := svc.UnShorten(&param)
 	if err != nil {
-		global.Logger.Errorf("svc.UnShorten err: %v", err)
+		global.Logger.Errorf(c, "svc.UnShorten err: %v", err)
 		response.ToErrorResponse(errcode.ErrorUnShortLinkFail)
 		return
 	}
@@ -91,7 +91,7 @@ func (t Link) Get(c *gin.Context) {
 	response := app.NewResponse(c)
 	valid, errs := app.BindAndValid(c, &param)
 	if !valid {
-		global.Logger.Errorf("app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(c, "app.BindAndValid errs: %v", errs)
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
@@ -99,7 +99,7 @@ func (t Link) Get(c *gin.Context) {
 	svc := service.New(c.Request.Context())
 	link, err := svc.GetLink(&param)
 	if err != nil {
-		global.Logger.Errorf("svc.GetLink err: %v", err)
+		global.Logger.Errorf(c, "svc.GetLink err: %v", err)
 		response.ToErrorResponse(errcode.ErrorGetLinkFail)
 		return
 	}
@@ -125,7 +125,7 @@ func (t Link) List(c *gin.Context) {
 	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
 	link, err := svc.GetLinkList(&pager)
 	if err != nil {
-		global.Logger.Errorf("svc.GetLinkList err: %v", err)
+		global.Logger.Errorf(c, "svc.GetLinkList err: %v", err)
 		response.ToErrorResponse(errcode.ErrorGetLinkListFail)
 		return
 	}

@@ -27,7 +27,7 @@ func (t LinkTrace) Get(c *gin.Context) {
 	response := app.NewResponse(c)
 	valid, errs := app.BindAndValid(c, &param)
 	if !valid {
-		global.Logger.Errorf("app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(c, "app.BindAndValid errs: %v", errs)
 		response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 		return
 	}
@@ -36,7 +36,7 @@ func (t LinkTrace) Get(c *gin.Context) {
 	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
 	traces, err := svc.GetLinkTrace(&param, &pager)
 	if err != nil {
-		global.Logger.Errorf("svc.GetLinkTrace err: %v", err)
+		global.Logger.Errorf(c, "svc.GetLinkTrace err: %v", err)
 		response.ToErrorResponse(errcode.ErrorGetLinkTraceFail)
 		return
 	}
@@ -61,7 +61,7 @@ func (t LinkTrace) List(c *gin.Context) {
 	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
 	link, err := svc.GetLinkTraceList(&pager)
 	if err != nil {
-		global.Logger.Errorf("svc.GetLinkList err: %v", err)
+		global.Logger.Errorf(c, "svc.GetLinkList err: %v", err)
 		response.ToErrorResponse(errcode.ErrorGetLinkListFail)
 		return
 	}

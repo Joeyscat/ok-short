@@ -5,7 +5,7 @@ import "github.com/jinzhu/gorm"
 type LinkTrace struct {
 	*Model
 	Sc     string
-	URL    string `gorm:"url"`
+	URL    string `gorm:"url"` // TODO remove
 	Ip     string `gorm:"ip"`
 	UA     string `gorm:"ua"`
 	Cookie string `gorm:"cookie"`
