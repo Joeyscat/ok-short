@@ -24,3 +24,7 @@ Redis:
   Addr: 127.0.0.1:6379
   Password: ""
   DB: 0
+JWT:
+  Secret: eddycjy
+  Issuer: oks-hort
+  Expire: 7200

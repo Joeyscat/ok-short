@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/joeyscat/ok-short/docs"
 	"github.com/joeyscat/ok-short/internel/middleware"
+	"github.com/joeyscat/ok-short/internel/routers/api"
 	v1 "github.com/joeyscat/ok-short/internel/routers/api/v1"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -36,6 +37,7 @@ func NewRouter() *gin.Engine {
 	//r.POST("/auth", api.GetAuth)
 	//r.StaticFS("/static", http.Dir(global.AppSetting.UploadSavePath))
 
+	r.GET("/auth", api.GetAuth)
 	// 短链接跳转
 	r.GET("/a/:sc", link.Redirect)
 	apiV1 := r.Group("/api/v1")

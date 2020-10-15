@@ -10,6 +10,9 @@ github.com/alecthomas/template
 github.com/alecthomas/template/parse
 # github.com/cpuguy83/go-md2man/v2 v2.0.0
 ## explicit
+# github.com/dgrijalva/jwt-go v3.2.0+incompatible
+## explicit
+github.com/dgrijalva/jwt-go
 # github.com/fsnotify/fsnotify v1.4.9
 ## explicit
 github.com/fsnotify/fsnotify
