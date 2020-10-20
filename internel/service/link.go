@@ -4,9 +4,19 @@ import (
 	"fmt"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internel/model"
-	"github.com/joeyscat/ok-short/internel/pkg"
 	"github.com/joeyscat/ok-short/pkg/app"
 	"time"
+)
+
+var (
+	LinkPrefix = "http://sc.vaiwan.com/"
+)
+
+const (
+	// URLIdKey redis自增主键所用的key
+	URLIdKey = "next.url.id"
+	// LinkKey 用于保存短链与原始链接的映射
+	LinkKey = "link:%s:url"
 )
 
 type CreateLinkRequest struct {
@@ -26,10 +36,10 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	// 生成ID，并进行62进制编码
 	id, err := genId()
 	sc := app.Base62Encode(id)
-	url := pkg.LinkPrefix + sc
+	url := LinkPrefix + sc
 
 	expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
-	err = global.Redis.Set(fmt.Sprintf(pkg.LinkKey, sc), param.URL, expiration).Err()
+	err = global.Redis.Set(fmt.Sprintf(LinkKey, sc), param.URL, expiration).Err()
 	if err != nil {
 		return "", err
 	}
@@ -44,7 +54,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 }
 
 func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
-	link, err := pkg.ReCli.Get(fmt.Sprintf(pkg.LinkKey, param.Sc)).Result()
+	link, err := global.Redis.Get(fmt.Sprintf(LinkKey, param.Sc)).Result()
 	if err != nil {
 		return "", err
 	}
@@ -65,10 +75,7 @@ func (svc *Service) GetLink(param *GetLinkRequest) (*model.Link, error) {
 }
 
 func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
-	var createdBy uint32 = 0
-	// TODO 当前用户，来源：1.提交参数 2.Token识别（当这两种方式获取不到时，取0值，查询会跳过这个条件）
-
-	link, err := svc.dao.GetLinkList(createdBy, model.StatueOpen, pager.Page, pager.PageSize)
+	link, err := svc.dao.GetLinkList(pager.Page, pager.PageSize)
 	if err != nil {
 		return nil, err
 	}
@@ -79,13 +86,13 @@ func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
 func genId() (int64, error) {
 	// TODO should lock #1 begin
 	// increase the global counter
-	err := global.Redis.Incr(pkg.URLIdKey).Err()
+	err := global.Redis.Incr(URLIdKey).Err()
 	if err != nil {
 		return -1, err
 	}
 
 	// encode global counter to base62
-	id, err := global.Redis.Get(pkg.URLIdKey).Int64()
+	id, err := global.Redis.Get(URLIdKey).Int64()
 	if err != nil {
 		return -1, err
 	}
