@@ -3,6 +3,7 @@ package routers
 import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/joeyscat/ok-short/docs"
+	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internel/middleware"
 	"github.com/joeyscat/ok-short/internel/routers/api"
 	v1 "github.com/joeyscat/ok-short/internel/routers/api/v1"
@@ -15,14 +16,14 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(Cors())
-	//if global.ServerSetting.RunMode == "debug" {
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
-	//} else {
-	//	r.Use(middleware.AccessLog())
-	//	r.Use(middleware.Recovery())
-	//}
-	//
+	if global.ServerSetting.RunMode == "debug" {
+		r.Use(gin.Logger())
+		r.Use(gin.Recovery())
+	} else {
+		r.Use(middleware.AccessLog())
+		r.Use(middleware.Recovery())
+	}
+
 	r.Use(middleware.Tracing())
 	//r.Use(middleware.RateLimiter(methodLimiters))
 	//r.Use(middleware.ContextTimeout(global.AppSetting.DefaultContextTimeout))

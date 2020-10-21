@@ -9,8 +9,10 @@ import (
 	"github.com/joeyscat/ok-short/pkg/setting"
 	"github.com/joeyscat/ok-short/pkg/tracer"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"io"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -105,14 +107,21 @@ func setupSetting() error {
 }
 
 func setupLogger() error {
-	global.Logger = logger.NewLogger(&lumberjack.Logger{
-		Filename: global.AppSetting.LogSavePath + "/" +
-			global.AppSetting.LogFileName +
-			global.AppSetting.LogFileExt,
-		MaxSize:   600,
-		MaxAge:    10,
-		LocalTime: true,
-	}, "", log.LstdFlags).WithCaller(2)
+	var w io.Writer
+	if global.ServerSetting.RunMode == "debug" {
+		w = os.Stdout
+	} else {
+		w = &lumberjack.Logger{
+			Filename: global.AppSetting.LogSavePath + "/" +
+				global.AppSetting.LogFileName +
+				global.AppSetting.LogFileExt,
+			MaxSize:   600,
+			MaxAge:    10,
+			LocalTime: true,
+		}
+	}
+
+	global.Logger = logger.NewLogger(w, "", log.LstdFlags).WithCaller(2)
 
 	return nil
 }
@@ -137,7 +146,7 @@ func setupRedis() error {
 	return nil
 }
 func setupTracer() error {
-	jaegerTracer, _, err := tracer.NewJaegerTracer("blog-service", "127.0.0.1:6831")
+	jaegerTracer, _, err := tracer.NewJaegerTracer("ok-link-service", "127.0.0.1:6831")
 	if err != nil {
 		return err
 	}

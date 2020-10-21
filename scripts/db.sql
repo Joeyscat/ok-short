@@ -35,9 +35,7 @@ CREATE TABLE ok_link
                          COLLATE utf8mb4_bin # 大小写敏感
                                   NOT NULL,
     `origin_url` VARCHAR(255)     Not NULL,
-    `name`       VARCHAR(20),
     `status`     VARCHAR(10),
-    `created_by` INT(10) UNSIGNED NOT NULL,
     `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     `deleted_at` TIMESTAMP,
@@ -55,11 +53,11 @@ DROP TABLE IF EXISTS `ok_link_trace`;
 CREATE TABLE `ok_link_trace`
 (
     `id`         INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-    `sc`        VARCHAR(10)
+    `sc`         VARCHAR(10)
                      CHARACTER SET utf8mb4
                          COLLATE utf8mb4_bin # 大小写敏感
                                   NOT NULL,
-    `url`        VARCHAR(255)      Not NULL,
+    `url`        VARCHAR(255)     Not NULL,
     `ip`         VARCHAR(32)      Not NULL,
     `ua`         VARCHAR(500)     Not NULL,
     `cookie`     VARCHAR(500)     Not NULL,
@@ -71,6 +69,26 @@ CREATE TABLE `ok_link_trace`
   AUTO_INCREMENT = 1
   COLLATE = utf8mb4_unicode_ci
   DEFAULT CHARSET = utf8mb4;
+
+# -------------------JWT--------------
+DROP TABLE IF EXISTS `ok_auth`;
+CREATE TABLE `ok_auth`
+(
+    `id`         INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `app_key`    varchar(20)               DEFAULT '' COMMENT 'Key',
+    `app_secret` varchar(50)               DEFAULT '' COMMENT 'Secret',
+    `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    `deleted_at` TIMESTAMP,
+    PRIMARY KEY (`id`) USING BTREE
+) ENGINE = INNODB
+  AUTO_INCREMENT = 1
+  COLLATE = utf8mb4_unicode_ci
+  DEFAULT CHARSET = utf8mb4
+    COMMENT '认证管理';
+
+INSERT INTO `ok_auth` ( app_key, app_secret)
+VALUES ('new_key','new_secret');
 
 # -------------------短链作者(服务用户)--------------
 DROP TABLE IF EXISTS `ok_link_author`;

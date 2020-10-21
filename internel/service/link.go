@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-var (
-	LinkPrefix = "http://sc.vaiwan.com/"
-)
-
 const (
 	// URLIdKey redis自增主键所用的key
 	URLIdKey = "next.url.id"
@@ -36,7 +32,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	// 生成ID，并进行62进制编码
 	id, err := genId()
 	sc := app.Base62Encode(id)
-	url := LinkPrefix + sc
+	url := global.AppSetting.LinkPrefix + sc
 
 	expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
 	err = global.Redis.Set(fmt.Sprintf(LinkKey, sc), param.URL, expiration).Err()

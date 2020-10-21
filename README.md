@@ -2,45 +2,70 @@
 
 ### 项目结构
 ```bash
-.
-├── api # 接口/协议
-│   ├── link.go
-│   ├── link.pb.go
-│   ├── link.proto
-│   ├── link_test.go
-│   └── plugin.go
-├── cmd # 程序入口
-│   └── ok-short
-│       ├── main.go
-│       └── ok-short
+├── configs # 配置
+│   └── config.yaml
+├── docs # 文档
+│   ├── docs.go
+│   ├── swagger.json
+│   └── swagger.yaml
+├── global
+│   ├── db.go
+│   ├── redis.go
+│   ├── setting.go
+│   └── tracer.go
 ├── go.mod
 ├── go.sum
-├── internel # 内部代码
+├── internel
+│   ├── dao
+│   │   ├── auth.go
+│   │   ├── dao.go
+│   │   ├── link.go
+│   │   └── link_trace.go
+│   ├── middleware
+│   │   ├── tracer.go
+│   │   └── translations.go
+│   ├── model
+│   │   ├── auth.go
+│   │   ├── link.go
+│   │   ├── link_trace.go
+│   │   ├── model.go
+│   │   └── README.md
+│   ├── routers
+│   │   ├── api
+│   │   │   ├── auth.go
+│   │   │   └── v1
+│   │   │       ├── link.go
+│   │   │       └── link_trace.go
+│   │   └── router.go
+│   └── service
+│       ├── auth.go
+│       ├── link.go
+│       ├── link_trace.go
+│       └── service.go
+├── LICENSE
+├── main.go
+├── pkg
 │   ├── app
 │   │   ├── app.go
-│   │   ├── context.go
-│   │   ├── ok-short # 服务实现
-│   │   │   ├── link.go
-│   │   │   ├── link_test.go
-│   │   │   └── service.go
-│   │   ├── ok-short-admin # 后台管理
-│   │   │   ├── author.go
-│   │   │   ├── link.go
-│   │   │   ├── service.go
-│   │   │   ├── user.go
-│   │   │   └── user_test.go
-│   │   └── route_handler.go
-│   └── pkg # 通用代码
-│       ├── common
-│       │   ├── error.go
-│       │   ├── status.go
-│       │   ├── utils.go
-│       │   └── view_model.go
-│       ├── middleware.go
-│       ├── model
-│       │   ├── link.go
-│       │   └── user.go
-│       └── store.go
+│   │   ├── form.go
+│   │   ├── jwt.go
+│   │   ├── pagination.go
+│   │   └── utils.go
+│   ├── convert
+│   │   └── convert.go
+│   ├── errcode
+│   │   ├── common_code.go
+│   │   ├── errcode.go
+│   │   └── module_code.go
+│   ├── logger
+│   │   └── logger.go
+│   ├── setting
+│   │   ├── section.go
+│   │   └── setting.go
+│   ├── tracer
+│   │   └── tracer.go
+│   └── util
+│       └── md5.go
 ├── README.md
 ├── scripts # 脚本
 │   └── db.sql

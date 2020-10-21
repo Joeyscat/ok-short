@@ -9,6 +9,7 @@ App:
   LogSavePath: storage/logs
   LogFileName: app
   LogFileExt: .log
+  LinkPrefix: http://sc.vaiwan.com/
 Database:
   DBType: mysql
   UserName: root
@@ -25,6 +26,6 @@ Redis:
   Password: ""
   DB: 0
 JWT:
-  Secret: eddycjy
-  Issuer: oks-hort
+  Secret: new_secret
+  Issuer: ok-short
   Expire: 7200
