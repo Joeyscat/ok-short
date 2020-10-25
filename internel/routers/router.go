@@ -24,7 +24,6 @@ func NewRouter() *gin.Engine {
 		r.Use(middleware.Recovery())
 	}
 
-	r.Use(middleware.Tracing())
 	//r.Use(middleware.RateLimiter(methodLimiters))
 	//r.Use(middleware.ContextTimeout(global.AppSetting.DefaultContextTimeout))
 	r.Use(middleware.Translations())
@@ -40,12 +39,13 @@ func NewRouter() *gin.Engine {
 
 	r.GET("/auth", api.GetAuth)
 	// 短链接跳转
+	// 这里 /a 是因为gin不能在跟路径进行匹配
 	r.GET("/a/:sc", link.Redirect)
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use() //middleware.JWT()
 	{
 		// 创建短链接
-		apiV1.POST("/shorten", link.Shorten)
+		apiV1.POST("/links", link.Shorten)
 		apiV1.GET("/links/:sc", link.Get)
 		apiV1.GET("/links", link.List)
 

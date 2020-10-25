@@ -18,9 +18,8 @@ func NewLink() Link {
 // @Summary 新增短链接
 // @Accept  json
 // @Produce  json
-// @Param url path string true "长链接" minlength(10) maxlength(100)
-// @Param expiration_in_minutes path int false "有效时间" min(0) max(1440) default(1440)
-// @Success 200 {object} model.Link "成功"
+// @Param link body service.CreateLinkRequest true "链接信息"
+// @Success 200 {object} model.Link "成功，短链数据"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/links [post]
@@ -80,11 +79,11 @@ func (t Link) Redirect(c *gin.Context) {
 
 // @Summary 获取单个短链详情
 // @Produce json
-// @Param id path int true "短链ID"
+// @Param sc path int true "短链ID"
 // @Success 200 {object} model.Link "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /api/v1/links/{id} [get]
+// @Router /api/v1/links/{sc} [get]
 func (t Link) Get(c *gin.Context) {
 	sc := c.Param("sc")
 	param := service.GetLinkRequest{Sc: sc}

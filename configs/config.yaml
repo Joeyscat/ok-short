@@ -9,7 +9,7 @@ App:
   LogSavePath: storage/logs
   LogFileName: app
   LogFileExt: .log
-  LinkPrefix: http://sc.vaiwan.com/
+  LinkPrefix: http://sc.vaiwan.com/a/ # 服务器所在域名
 Database:
   DBType: mysql
   UserName: root

@@ -10,33 +10,19 @@ definitions:
     type: object
   errcode.Error:
     type: object
-  model.Group:
-    properties:
-      id:
-        type: integer
-      name:
-        type: string
-      sid:
-        type: string
-    type: object
   model.Link:
     properties:
-      createdBy:
-        type: integer
+      created_at:
+        type: string
+      deleted_at:
+        type: string
       exp:
         type: integer
-      group:
-        $ref: '#/definitions/model.Group'
-        description: 分组
-        type: object
-      name:
-        type: string
+      id:
+        type: integer
       originURL:
         description: 原始链接
         type: string
-      pv:
-        $ref: '#/definitions/model.Trace'
-        type: object
       sc:
         description: 短链代码
         type: string
@@ -44,6 +30,8 @@ definitions:
         description: 业务标识
         type: string
       status:
+        type: string
+      updated_at:
         type: string
     type: object
   model.LinkSwagger:
@@ -56,7 +44,14 @@ definitions:
         $ref: '#/definitions/app.Pager'
         type: object
     type: object
-  model.Trace:
+  service.CreateLinkRequest:
+    properties:
+      expiration_in_minutes:
+        type: integer
+      url:
+        type: string
+    required:
+    - url
     type: object
 info:
   contact: {}
@@ -66,6 +61,61 @@ info:
   title: 短链接服务
   version: "1.0"
 paths:
+  /api/v1/link-trace:
+    get:
+      parameters:
+      - description: 状态
+        in: query
+        name: state
+        type: integer
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.LinkSwagger'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取多个短链接访问记录
+  /api/v1/link-trace/{sc}:
+    get:
+      parameters:
+      - description: 短链sc
+        in: path
+        name: sc
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/model.Link'
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 获取短链的访问记录
   /api/v1/links:
     get:
       parameters:
@@ -105,23 +155,17 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: 长链接
-        in: path
-        maxLength: 100
-        minLength: 10
-        name: url
+      - description: 链接信息
+        in: body
+        name: link
         required: true
-        type: string
-      - default: 1440
-        description: 有效时间
-        in: path
-        name: expiration_in_minutes
-        type: integer
+        schema:
+          $ref: '#/definitions/service.CreateLinkRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: 成功
+          description: 成功，短链数据
           schema:
             $ref: '#/definitions/model.Link'
         "400":
@@ -157,11 +201,12 @@ paths:
           schema:
             $ref: '#/definitions/errcode.Error'
       summary: 短链接跳转
+  /api/v1/links/{sc}:
     get:
       parameters:
       - description: 短链ID
         in: path
-        name: id
+        name: sc
         required: true
         type: integer
       produces:

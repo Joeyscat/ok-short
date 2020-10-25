@@ -26,6 +26,91 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/link-trace": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取多个短链接访问记录",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "状态",
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "页码",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量",
+                        "name": "page_size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.LinkSwagger"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/link-trace/{sc}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取短链的访问记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "短链sc",
+                        "name": "sc",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.Link"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/links": {
             "get": {
                 "produces": [
@@ -89,25 +174,18 @@ var doc = `{
                 "summary": "新增短链接",
                 "parameters": [
                     {
-                        "maxLength": 100,
-                        "minLength": 10,
-                        "type": "string",
-                        "description": "长链接",
-                        "name": "url",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1440,
-                        "description": "有效时间",
-                        "name": "expiration_in_minutes",
-                        "in": "path"
+                        "description": "链接信息",
+                        "name": "link",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/service.CreateLinkRequest"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "成功",
+                        "description": "成功，短链数据",
                         "schema": {
                             "$ref": "#/definitions/model.Link"
                         }
@@ -128,41 +206,6 @@ var doc = `{
             }
         },
         "/api/v1/links/{id}": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "获取单个短链详情",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "短链ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "$ref": "#/definitions/model.Link"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "produces": [
                     "application/json"
@@ -182,6 +225,43 @@ var doc = `{
                         "description": "成功",
                         "schema": {
                             "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/links/{sc}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "获取单个短链详情",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "短链ID",
+                        "name": "sc",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/model.Link"
                         }
                     },
                     "400": {
@@ -218,44 +298,24 @@ var doc = `{
         "errcode.Error": {
             "type": "object"
         },
-        "model.Group": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "sid": {
-                    "type": "string"
-                }
-            }
-        },
         "model.Link": {
             "type": "object",
             "properties": {
-                "createdBy": {
-                    "type": "integer"
+                "created_at": {
+                    "type": "string"
+                },
+                "deleted_at": {
+                    "type": "string"
                 },
                 "exp": {
                     "type": "integer"
                 },
-                "group": {
-                    "description": "分组",
-                    "type": "object",
-                    "$ref": "#/definitions/model.Group"
-                },
-                "name": {
-                    "type": "string"
+                "id": {
+                    "type": "integer"
                 },
                 "originURL": {
                     "description": "原始链接",
                     "type": "string"
-                },
-                "pv": {
-                    "type": "object",
-                    "$ref": "#/definitions/model.Trace"
                 },
                 "sc": {
                     "description": "短链代码",
@@ -266,6 +326,9 @@ var doc = `{
                     "type": "string"
                 },
                 "status": {
+                    "type": "string"
+                },
+                "updated_at": {
                     "type": "string"
                 }
             }
@@ -285,8 +348,19 @@ var doc = `{
                 }
             }
         },
-        "model.Trace": {
-            "type": "object"
+        "service.CreateLinkRequest": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "expiration_in_minutes": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`

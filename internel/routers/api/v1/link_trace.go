@@ -16,7 +16,7 @@ func NewLinkTrace() LinkTrace {
 
 // @Summary 获取短链的访问记录
 // @Produce json
-// @Param id path int true "短链sc"
+// @Param sc path string true "短链sc"
 // @Success 200 {object} model.Link "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
