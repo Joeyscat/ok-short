@@ -61,6 +61,30 @@ info:
   title: 短链接服务
   version: "1.0"
 paths:
+  /a/{sc}:
+    get:
+      parameters:
+      - description: 短链接ID
+        in: path
+        name: sc
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            type: string
+        "400":
+          description: 请求错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+        "500":
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/errcode.Error'
+      summary: 短链接跳转
   /api/v1/link-trace:
     get:
       parameters:
@@ -177,30 +201,6 @@ paths:
           schema:
             $ref: '#/definitions/errcode.Error'
       summary: 新增短链接
-  /api/v1/links/{id}:
-    delete:
-      parameters:
-      - description: 短链接ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 成功
-          schema:
-            type: string
-        "400":
-          description: 请求错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-        "500":
-          description: 内部错误
-          schema:
-            $ref: '#/definitions/errcode.Error'
-      summary: 短链接跳转
   /api/v1/links/{sc}:
     get:
       parameters:
@@ -208,7 +208,7 @@ paths:
         in: path
         name: sc
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:

@@ -47,11 +47,11 @@ func (t Link) Shorten(c *gin.Context) {
 
 // @Summary 短链接跳转
 // @Produce  json
-// @Param id path int true "短链接ID"
+// @Param sc path string true "短链接ID"
 // @Success 200 {string} string "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
-// @Router /api/v1/links/{id} [delete]
+// @Router /a/{sc} [get]
 func (t Link) Redirect(c *gin.Context) {
 	sc := c.Param("sc")
 	param := service.RedirectLinkRequest{Sc: sc}
@@ -79,7 +79,7 @@ func (t Link) Redirect(c *gin.Context) {
 
 // @Summary 获取单个短链详情
 // @Produce json
-// @Param sc path int true "短链ID"
+// @Param sc path string true "短链ID"
 // @Success 200 {object} model.Link "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"

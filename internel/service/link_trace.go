@@ -29,6 +29,6 @@ func (svc *Service) GetLinkTrace(param *GetLinkTraceRequest, pager *app.Pager) (
 
 // 获取多个短链访问记录
 func (svc *Service) GetLinkTraceList(pager *app.Pager) ([]*model.LinkTrace, error) {
-
+	// TODO
 	return nil, nil
 }

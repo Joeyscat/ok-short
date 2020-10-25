@@ -9,7 +9,6 @@ import (
 	v1 "github.com/joeyscat/ok-short/internel/routers/api/v1"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
-	"log"
 	"net/http"
 )
 
@@ -77,12 +76,6 @@ func Cors() gin.HandlerFunc {
 		if method == "OPTIONS" {
 			c.JSON(http.StatusOK, "ok!")
 		}
-
-		defer func() {
-			if err := recover(); err != nil {
-				log.Printf("Panic info is: %v", err)
-			}
-		}()
 
 		c.Next()
 	}

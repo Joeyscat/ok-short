@@ -12,9 +12,9 @@ App:
   LinkPrefix: http://sc.vaiwan.com/a/ # 服务器所在域名
 Database:
   DBType: mysql
-  UserName: root
+  UserName: pi172
   Password: 123456
-  Host: 127.0.0.1
+  Host: 192.168.50.20
   DBName: ok-short
   TablePrefix: ok_
   Charset: utf8
@@ -22,7 +22,7 @@ Database:
   MaxIdleConns: 10
   MaxOpenConns: 30
 Redis:
-  Addr: 127.0.0.1:6379
+  Addr: 192.168.50.20:6379
   Password: ""
   DB: 0
 JWT:

@@ -11,8 +11,7 @@
 ├── global
 │   ├── db.go
 │   ├── redis.go
-│   ├── setting.go
-│   └── tracer.go
+│   └── setting.go
 ├── go.mod
 ├── go.sum
 ├── internel
@@ -22,7 +21,6 @@
 │   │   ├── link.go
 │   │   └── link_trace.go
 │   ├── middleware
-│   │   ├── tracer.go
 │   │   └── translations.go
 │   ├── model
 │   │   ├── auth.go
@@ -62,8 +60,6 @@
 │   ├── setting
 │   │   ├── section.go
 │   │   └── setting.go
-│   ├── tracer
-│   │   └── tracer.go
 │   └── util
 │       └── md5.go
 ├── README.md

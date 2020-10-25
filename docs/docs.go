@@ -26,6 +26,43 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/a/{sc}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "短链接跳转",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "短链接ID",
+                        "name": "sc",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "请求错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/errcode.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/link-trace": {
             "get": {
                 "produces": [
@@ -205,43 +242,6 @@ var doc = `{
                 }
             }
         },
-        "/api/v1/links/{id}": {
-            "delete": {
-                "produces": [
-                    "application/json"
-                ],
-                "summary": "短链接跳转",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "短链接ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "成功",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "请求错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "内部错误",
-                        "schema": {
-                            "$ref": "#/definitions/errcode.Error"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/links/{sc}": {
             "get": {
                 "produces": [
@@ -250,7 +250,7 @@ var doc = `{
                 "summary": "获取单个短链详情",
                 "parameters": [
                     {
-                        "type": "integer",
+                        "type": "string",
                         "description": "短链ID",
                         "name": "sc",
                         "in": "path",

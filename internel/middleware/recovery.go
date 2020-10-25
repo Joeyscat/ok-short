@@ -13,6 +13,7 @@ func Recovery() gin.HandlerFunc {
 			if err := recover(); err != nil {
 				global.Logger.WithCallersFrames().Errorf(c, "panic recover err: %v", err)
 
+				// TODO Email
 				app.NewResponse(c).ToErrorResponse(errcode.ServerError)
 				c.Abort()
 			}
