@@ -109,10 +109,6 @@ func (t Link) Get(c *gin.Context) {
 
 // @Summary 获取多个短链接
 // @Produce json
-// @Param created_by query int false "创建者ID"
-// @Param state query int false "状态"
-// @Param page query int false "页码"
-// @Param page_size query int false "每页数量"
 // @Success 200 {object} model.LinkSwagger "成功"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"

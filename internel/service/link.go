@@ -50,11 +50,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 }
 
 func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
-	link, err := global.Redis.Get(fmt.Sprintf(LinkKey, param.Sc)).Result()
-	if err != nil {
-		return "", err
-	}
-	return link, nil
+	return global.Redis.Get(fmt.Sprintf(LinkKey, param.Sc)).Result()
 	//link, err := svc.dao.GetLink(param.Sc)
 	//if err != nil {
 	//	return "", err
@@ -63,20 +59,12 @@ func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
 }
 
 func (svc *Service) GetLink(param *GetLinkRequest) (*model.Link, error) {
-	link, err := svc.dao.GetLink(param.Sc)
-	if err != nil {
-		return nil, err
-	}
-	return link, nil
+	return svc.dao.GetLink(param.Sc)
 }
 
 func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
-	link, err := svc.dao.GetLinkList(pager.Page, pager.PageSize)
-	if err != nil {
-		return nil, err
-	}
-	// DO -> VO
-	return link, nil
+	return svc.dao.GetLinkList(pager.Page, pager.PageSize)
+	// TODO DO -> VO
 }
 
 func genId() (int64, error) {
@@ -88,10 +76,6 @@ func genId() (int64, error) {
 	}
 
 	// encode global counter to base62
-	id, err := global.Redis.Get(URLIdKey).Int64()
-	if err != nil {
-		return -1, err
-	}
-	return id, nil
+	return global.Redis.Get(URLIdKey).Int64()
 	// TODO should lock #1 end
 }

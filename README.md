@@ -1,69 +1,29 @@
-## 短链接服务后台
+### ok-short
+基于golang构建的短链接服务
 
-### 项目结构
-```bash
-├── configs # 配置
-│   └── config.yaml
-├── docs # 文档
-│   ├── docs.go
-│   ├── swagger.json
-│   └── swagger.yaml
-├── global
-│   ├── db.go
-│   ├── redis.go
-│   └── setting.go
-├── go.mod
-├── go.sum
-├── internel
-│   ├── dao
-│   │   ├── auth.go
-│   │   ├── dao.go
-│   │   ├── link.go
-│   │   └── link_trace.go
-│   ├── middleware
-│   │   └── translations.go
-│   ├── model
-│   │   ├── auth.go
-│   │   ├── link.go
-│   │   ├── link_trace.go
-│   │   ├── model.go
-│   │   └── README.md
-│   ├── routers
-│   │   ├── api
-│   │   │   ├── auth.go
-│   │   │   └── v1
-│   │   │       ├── link.go
-│   │   │       └── link_trace.go
-│   │   └── router.go
-│   └── service
-│       ├── auth.go
-│       ├── link.go
-│       ├── link_trace.go
-│       └── service.go
-├── LICENSE
-├── main.go
-├── pkg
-│   ├── app
-│   │   ├── app.go
-│   │   ├── form.go
-│   │   ├── jwt.go
-│   │   ├── pagination.go
-│   │   └── utils.go
-│   ├── convert
-│   │   └── convert.go
-│   ├── errcode
-│   │   ├── common_code.go
-│   │   ├── errcode.go
-│   │   └── module_code.go
-│   ├── logger
-│   │   └── logger.go
-│   ├── setting
-│   │   ├── section.go
-│   │   └── setting.go
-│   └── util
-│       └── md5.go
-├── README.md
-├── scripts # 脚本
-│   └── db.sql
-└── vendor # 第三方库
+### 技术栈
+* gin
+* gorm
+* redis
+* mysql
+* swagger
+
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+
+## 功能
+* 长链接->短链接
+* 短链接跳转
+* 短链接查询
+
+### 运行方式
+1. 编辑配置文件 configs/config.yaml
+主要是 MySQL 和 Redis 配置，以及 App.LinkPrefix，这是短链服务所在主机的域名，短链接就是根据这个域名和一个短码生成的
+2. 编译项目&运行
+```shell script
+go build -o app
+./app
 ```
+3. 访问swagger http://ip:port/swagger/index.html
+
+### 许可
+Released under the [MIT License](https://github.com/Joeyscat/ok-short/blob/master/LICENSE)
