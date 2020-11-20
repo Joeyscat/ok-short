@@ -71,8 +71,13 @@ func (t Link) Redirect(c *gin.Context) {
 		return
 	}
 
-	// save visit log
-	svc.CreateLinkTrace(sc, link, c)
+	// save link trace
+	go func() {
+		_, err := svc.CreateLinkTrace(sc, link, c)
+		if err != nil {
+			global.Logger.Errorf(c, "svc.CreateLinkTrace err: %v", err)
+		}
+	}()
 
 	c.Redirect(http.StatusTemporaryRedirect, link)
 }

@@ -25,7 +25,7 @@ func NewRouter() *gin.Engine {
 
 	//r.Use(middleware.RateLimiter(methodLimiters))
 	//r.Use(middleware.ContextTimeout(global.AppSetting.DefaultContextTimeout))
-	r.Use(middleware.Translations())
+	//r.Use(middleware.Translations())
 
 	link := v1.NewLink()
 	linkTrace := v1.NewLinkTrace()

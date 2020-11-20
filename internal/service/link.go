@@ -34,13 +34,14 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	sc := app.Base62Encode(id)
 	url := global.AppSetting.LinkPrefix + sc
 
+	// 存储短链接代码与原链接的映射到Redis SC:URL
 	expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
 	err = global.Redis.Set(fmt.Sprintf(LinkKey, sc), param.URL, expiration).Err()
 	if err != nil {
 		return "", err
 	}
-	// 存储原链接与短链接代码的映射
 	// TODO 定时清理过期数据
+	// 存储短链详情到数据库
 	_, err = svc.dao.CreateLink(sc, param.URL, param.ExpirationInMinutes)
 	if err != nil {
 		return "", err

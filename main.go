@@ -21,6 +21,8 @@ import (
 // @termsOfService mm
 func main() {
 	initEnv()
+	defer global.DBEngine.Close()
+	defer global.Redis.Close()
 
 	gin.SetMode(global.ServerSetting.RunMode)
 	router := routers.NewRouter()
@@ -31,13 +33,11 @@ func main() {
 		WriteTimeout:   global.ServerSetting.WriteTimeout,
 		MaxHeaderBytes: 1 << 20,
 	}
+	defer s.Close()
 	err := s.ListenAndServe()
 	if err != nil {
 		log.Fatalf("server err: %v", err)
 	}
-
-	global.DBEngine.Close()
-	global.Redis.Close()
 }
 
 func initEnv() {
