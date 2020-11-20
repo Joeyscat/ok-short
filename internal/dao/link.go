@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/joeyscat/ok-short/internel/model"
+	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/pkg/app"
 )
 
@@ -23,7 +23,6 @@ func (d *Dao) GetLink(sc string) (*model.Link, error) {
 }
 
 func (d *Dao) GetLinkList(page, pageSize int) ([]*model.Link, error) {
-	link := &model.Link{
-	}
+	link := &model.Link{}
 	return link.List(d.engine, app.GetPageOffset(page, pageSize), pageSize)
 }

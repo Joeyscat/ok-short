@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internel/model"
+	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/pkg/app"
 	"time"
 )

@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internel/model"
-	"github.com/joeyscat/ok-short/internel/routers"
+	"github.com/joeyscat/ok-short/internal/model"
+	"github.com/joeyscat/ok-short/internal/routers"
 	"github.com/joeyscat/ok-short/pkg/logger"
 	"github.com/joeyscat/ok-short/pkg/setting"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -15,7 +15,32 @@ import (
 	"time"
 )
 
-func init() {
+// @title 短链接服务
+// @version 1.0
+// @description GoGo
+// @termsOfService mm
+func main() {
+	initEnv()
+
+	gin.SetMode(global.ServerSetting.RunMode)
+	router := routers.NewRouter()
+	s := &http.Server{
+		Addr:           ":" + global.ServerSetting.HttpPort,
+		Handler:        router,
+		ReadTimeout:    global.ServerSetting.ReadTimeout,
+		WriteTimeout:   global.ServerSetting.WriteTimeout,
+		MaxHeaderBytes: 1 << 20,
+	}
+	err := s.ListenAndServe()
+	if err != nil {
+		log.Fatalf("server err: %v", err)
+	}
+
+	global.DBEngine.Close()
+	global.Redis.Close()
+}
+
+func initEnv() {
 	err := setupSetting()
 	if err != nil {
 		log.Fatalf("init.setupSetting err: %v", err)
@@ -35,29 +60,6 @@ func init() {
 	if err != nil {
 		log.Fatalf("init.setupLogger err: %v", err)
 	}
-}
-
-// @title 短链接服务
-// @version 1.0
-// @description GoGo
-// @termsOfService mm
-func main() {
-	gin.SetMode(global.ServerSetting.RunMode)
-	router := routers.NewRouter()
-	s := &http.Server{
-		Addr:           ":" + global.ServerSetting.HttpPort,
-		Handler:        router,
-		ReadTimeout:    global.ServerSetting.ReadTimeout,
-		WriteTimeout:   global.ServerSetting.WriteTimeout,
-		MaxHeaderBytes: 1 << 20,
-	}
-	err := s.ListenAndServe()
-	if err != nil {
-		log.Fatalf("server err: %v", err)
-	}
-
-	global.DBEngine.Close()
-	global.Redis.Close()
 }
 
 func setupSetting() error {

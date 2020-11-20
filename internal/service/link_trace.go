@@ -2,7 +2,7 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/joeyscat/ok-short/internel/model"
+	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/pkg/app"
 )
 

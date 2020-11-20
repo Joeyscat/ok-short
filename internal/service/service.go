@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internel/dao"
+	"github.com/joeyscat/ok-short/internal/dao"
 )
 
 type Service struct {

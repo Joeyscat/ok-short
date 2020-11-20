@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/joeyscat/ok-short/internel/model"
+	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/pkg/app"
 )
 

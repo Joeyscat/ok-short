@@ -3,7 +3,7 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internel/service"
+	"github.com/joeyscat/ok-short/internal/service"
 	"github.com/joeyscat/ok-short/pkg/app"
 	"github.com/joeyscat/ok-short/pkg/errcode"
 	"net/http"

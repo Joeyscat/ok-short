@@ -38,15 +38,16 @@ CREATE TABLE ok_link
     `status`     VARCHAR(10),
     `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    `deleted_at` TIMESTAMP,
+    `deleted_at` TIMESTAMP        NULL,
     `exp`        INT(10) UNSIGNED NOT NULL DEFAULT 30,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE (`sc`, `sid`)
 ) ENGINE = INNODB
   AUTO_INCREMENT = 1
   COLLATE = utf8mb4_unicode_ci
   DEFAULT CHARSET = utf8mb4;
-ALTER TABLE ok_link
-    ADD UNIQUE (`sc`, `sid`);
+# ALTER TABLE ok_link
+#     ADD UNIQUE (`sc`, `sid`);
 
 # -------------------短链访问记录--------------
 DROP TABLE IF EXISTS `ok_link_trace`;
@@ -63,7 +64,7 @@ CREATE TABLE `ok_link_trace`
     `cookie`     VARCHAR(500)     Not NULL,
     `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    `deleted_at` TIMESTAMP,
+    `deleted_at` TIMESTAMP        NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = INNODB
   AUTO_INCREMENT = 1
@@ -79,7 +80,7 @@ CREATE TABLE `ok_auth`
     `app_secret` varchar(50)               DEFAULT '' COMMENT 'Secret',
     `created_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
     `updated_at` TIMESTAMP        NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    `deleted_at` TIMESTAMP,
+    `deleted_at` TIMESTAMP        NULL,
     PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = INNODB
   AUTO_INCREMENT = 1
@@ -87,8 +88,8 @@ CREATE TABLE `ok_auth`
   DEFAULT CHARSET = utf8mb4
     COMMENT '认证管理';
 
-INSERT INTO `ok_auth` ( app_key, app_secret)
-VALUES ('new_key','new_secret');
+INSERT INTO `ok_auth` (app_key, app_secret)
+VALUES ('new_key', 'new_secret');
 
 # -------------------短链作者(服务用户)--------------
 DROP TABLE IF EXISTS `ok_link_author`;
