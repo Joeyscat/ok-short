@@ -31,10 +31,7 @@ func NewDBEngine(setting *setting.DatabaseSettingS) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	if global.ServerSetting.RunMode == "debug" {
-		db.LogMode(true)
-	}
+	db.LogMode(global.DatabaseSetting.LogMode)
 	db.SingularTable(true)
 	//db.Callback().Create().Replace("gorm:update_time_stamp", updateTimeStampForCreateCallback)
 	//db.Callback().Update().Replace("gorm:update_time_stamp", updateTimeStampForUpdateCallback)

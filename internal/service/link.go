@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internal/model"
+	"github.com/joeyscat/ok-short/internal/msg"
 	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/joeyscat/ok-short/pkg/codec"
 	"time"
 )
 
@@ -42,12 +44,11 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	}
 	// TODO 定时清理过期数据
 	// 存储短链详情到数据库
-	_, err = svc.dao.CreateLink(sc, param.URL, param.ExpirationInMinutes)
-	if err != nil {
-		return "", err
-	}
+	linkMsg := &msg.LinkMsg{Sc: sc, URL: param.URL, Exp: param.ExpirationInMinutes}
+	msgBytes, err := codec.Encoder(linkMsg)
+	err = global.Nats.Publish(global.NatsSetting.Subj.LinkDetail, msgBytes)
 
-	return url, nil
+	return url, err
 }
 
 func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {

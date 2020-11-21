@@ -5,15 +5,7 @@ import (
 	"github.com/joeyscat/ok-short/pkg/app"
 )
 
-func (d *Dao) CreateLinkTrace(sc, url, ip, ua, cookies string) (*model.LinkTrace, error) {
-	l := &model.LinkTrace{
-		Model:  nil,
-		Sc:     sc,
-		URL:    url,
-		Ip:     ip,
-		UA:     ua,
-		Cookie: cookies,
-	}
+func (d *Dao) CreateLinkTrace(l *model.LinkTrace) (*model.LinkTrace, error) {
 	return l.Create(d.engine)
 }
 

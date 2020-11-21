@@ -21,6 +21,8 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/mattheath/base62 v0.0.0-20150408093626-b80cdc656a7a
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
+	github.com/nats-io/nats-server/v2 v2.1.9 // indirect
+	github.com/nats-io/nats.go v1.10.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect

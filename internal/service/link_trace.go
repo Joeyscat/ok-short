@@ -2,8 +2,11 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internal/model"
+	"github.com/joeyscat/ok-short/internal/msg"
 	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/joeyscat/ok-short/pkg/codec"
 )
 
 type GetLinkTraceRequest struct {
@@ -19,7 +22,16 @@ func (svc *Service) CreateLinkTrace(sc, url string, c *gin.Context) (*model.Link
 		cookieStr += cookie.Name + ":" + cookie.Value + "&"
 	}
 
-	return svc.dao.CreateLinkTrace(sc, url, ip, ua, cookieStr)
+	m := &msg.LinkTraceMsg{
+		Sc:     sc,
+		URL:    url,
+		Ip:     ip,
+		UA:     ua,
+		Cookie: cookieStr,
+	}
+	msgBytes, err := codec.Encoder(m)
+	err = global.Nats.Publish(global.NatsSetting.Subj.LinkTrace, msgBytes)
+	return nil, err
 }
 
 // 获取某短链访问记录，返回一个LinkTrace数组

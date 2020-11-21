@@ -31,12 +31,28 @@ type DatabaseSettingS struct {
 	ParseTime    bool
 	MaxIdleConns int
 	MaxOpenConns int
+	LogMode      bool
 }
 
 type RedisSettingS struct {
 	Addr     string
 	Password string
 	DB       int
+}
+
+type NatsSetting struct {
+	Url   string
+	Subj  NatsSubj
+	Queue NatsQueue
+}
+
+type NatsQueue struct {
+	Link string
+}
+
+type NatsSubj struct {
+	LinkDetail string
+	LinkTrace  string
 }
 
 type JWTSettingS struct {

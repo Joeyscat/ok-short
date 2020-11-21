@@ -1,12 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/internal/routers"
 	"github.com/joeyscat/ok-short/pkg/logger"
 	"github.com/joeyscat/ok-short/pkg/setting"
+	"github.com/nats-io/nats.go"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"log"
@@ -23,6 +25,7 @@ func main() {
 	initEnv()
 	defer global.DBEngine.Close()
 	defer global.Redis.Close()
+	defer global.Nats.Close()
 
 	gin.SetMode(global.ServerSetting.RunMode)
 	router := routers.NewRouter()
@@ -43,22 +46,27 @@ func main() {
 func initEnv() {
 	err := setupSetting()
 	if err != nil {
-		log.Fatalf("init.setupSetting err: %v", err)
+		log.Fatalf("setupSetting err: %v", err)
 	}
 
 	err = setupDBEngine()
 	if err != nil {
-		log.Fatalf("init.setupDBEngine err: %v", err)
+		log.Fatalf("setupDBEngine err: %v", err)
 	}
 
 	err = setupRedis()
 	if err != nil {
-		log.Fatalf("init.setupRedis err: %v", err)
+		log.Fatalf("setupRedis err: %v", err)
+	}
+
+	err = setupNats()
+	if err != nil {
+		log.Fatalf("setupNats err: %v", err)
 	}
 
 	err = setupLogger()
 	if err != nil {
-		log.Fatalf("init.setupLogger err: %v", err)
+		log.Fatalf("setupLogger err: %v", err)
 	}
 }
 
@@ -83,6 +91,10 @@ func setupSetting() error {
 	if err != nil {
 		return err
 	}
+	err = s.ReadSection("Nats", &global.NatsSetting)
+	if err != nil {
+		return err
+	}
 	err = s.ReadSection("JWT", &global.JWTSetting)
 	if err != nil {
 		return err
@@ -97,6 +109,7 @@ func setupSetting() error {
 		log.Printf("AppSetting: %v", global.AppSetting)
 		log.Printf("DatabaseSetting: %v", global.DatabaseSetting)
 		log.Printf("Redis: %v", global.RedisSetting)
+		log.Printf("Nats: %v", global.NatsSetting)
 	}
 
 	return nil
@@ -133,10 +146,19 @@ func setupDBEngine() error {
 }
 
 func setupRedis() error {
-	var err error
 	global.Redis = model.NewRedis(global.RedisSetting)
 	if global.Redis == nil {
-		return err
+		return fmt.Errorf("cnnnect redis failed")
+	}
+
+	return nil
+}
+
+func setupNats() error {
+	var err error
+	global.Nats, err = nats.Connect(global.NatsSetting.Url)
+	if err != nil {
+		panic(err)
 	}
 
 	return nil
