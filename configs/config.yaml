@@ -10,9 +10,10 @@ App:
   LogFileName: app
   LogFileExt: .log
   LinkPrefix: http://sc.vaiwan.com/a/ # 服务器所在域名
+  RequestLimit: 1000 # 请求限制的时间间隔，单位毫秒
 Database:
   DBType: mysql
-  UserName: pi172
+  UserName: miao
   Password: 123456
   Host: 192.168.50.20
   DBName: ok-short

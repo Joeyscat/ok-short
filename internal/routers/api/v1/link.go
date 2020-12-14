@@ -19,7 +19,7 @@ func NewLink() Link {
 // @Accept  json
 // @Produce  json
 // @Param link body service.CreateLinkRequest true "链接信息"
-// @Success 200 {object} model.Link "成功，短链数据"
+// @Success 200 {object} model.Link "请求成功，返回短链数据"
 // @Failure 400 {object} errcode.Error "请求错误"
 // @Failure 500 {object} errcode.Error "内部错误"
 // @Router /api/v1/links [post]

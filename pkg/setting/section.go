@@ -18,6 +18,7 @@ type AppSettingS struct {
 	LogFileName     string
 	LogFileExt      string
 	LinkPrefix      string
+	RequestLimit    time.Duration
 }
 
 type DatabaseSettingS struct {
