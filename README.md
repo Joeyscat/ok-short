@@ -1,29 +1,33 @@
 ### ok-short
-基于golang构建的短链接服务
+Short link service built on golang
 
-### 技术栈
+### Build On
 * gin
 * gorm
 * redis
 * mysql
+* nats
 * swagger
 
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
-## 功能
-* 长链接->短链接
-* 短链接跳转
-* 短链接查询
+### Feature
+* Long links -> Short link
+* Jump to the original url by visiting the short link
+* Query the original link through the short link
 
-### 运行方式
-1. 编辑配置文件 configs/config.yaml
-主要是 MySQL 和 Redis 配置，以及 App.LinkPrefix，这是短链服务所在主机的域名，短链接就是根据这个域名和一个短码生成的
-2. 编译项目&运行
+### Prepare the environment
+1. redis
+2. mysql
+3. nats
+
+Set up the above environment and modify the configs/config.yaml
+
+### Compilation
 ```shell script
-go build -o app
-./app
+scripts/build.sh # Use scripts/build.bat on Windows
 ```
-3. 访问swagger http://ip:port/swagger/index.html
+3. Access swagger page: http://ip:port/swagger/index.html
 
-### 许可
+### License
 Released under the [MIT License](https://github.com/Joeyscat/ok-short/blob/master/LICENSE)

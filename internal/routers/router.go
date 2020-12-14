@@ -22,7 +22,6 @@ func NewRouter() *gin.Engine {
 		r.Use(middleware.AccessLog())
 		r.Use(middleware.Recovery())
 	}
-	r.Use(middleware.RequestLimit())
 
 	//r.Use(middleware.RateLimiter(methodLimiters))
 	//r.Use(middleware.ContextTimeout(global.AppSetting.DefaultContextTimeout))
@@ -30,12 +29,8 @@ func NewRouter() *gin.Engine {
 
 	link := v1.NewLink()
 	linkTrace := v1.NewLinkTrace()
-	//upload := api.NewUpload()
-	//r.GET("/debug/vars", api.Expvar)
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	//r.POST("/upload/file", upload.UploadFile)
 	//r.POST("/auth", api.GetAuth)
-	//r.StaticFS("/static", http.Dir(global.AppSetting.UploadSavePath))
 
 	r.GET("/auth", api.GetAuth)
 	// 短链接跳转
@@ -43,6 +38,7 @@ func NewRouter() *gin.Engine {
 	r.GET("/a/:sc", link.Redirect)
 	apiV1 := r.Group("/api/v1")
 	apiV1.Use() //middleware.JWT()
+	apiV1.Use(middleware.RequestLimit())
 	{
 		// 创建短链接
 		apiV1.POST("/links", link.Shorten)
