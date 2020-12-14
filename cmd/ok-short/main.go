@@ -8,13 +8,14 @@ import (
 	"github.com/joeyscat/ok-short/internal/routers"
 	"github.com/joeyscat/ok-short/pkg/logger"
 	"github.com/joeyscat/ok-short/pkg/setting"
-	"github.com/nats-io/nats.go"
 	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	stan "github.com/nats-io/go-nats-streaming"
 )
 
 // @title 短链接服务
@@ -25,7 +26,7 @@ func main() {
 	initEnv()
 	defer global.DBEngine.Close()
 	defer global.Redis.Close()
-	defer global.Nats.Close()
+	defer global.StanConn.Close()
 
 	gin.SetMode(global.ServerSetting.RunMode)
 	router := routers.NewRouter()
@@ -156,7 +157,8 @@ func setupRedis() error {
 
 func setupNats() error {
 	var err error
-	global.Nats, err = nats.Connect(global.NatsSetting.Url)
+
+	global.StanConn, err = stan.Connect("test-cluster", "ok-short-01", stan.NatsURL(global.NatsSetting.Url))
 	if err != nil {
 		panic(err)
 	}

@@ -8,31 +8,39 @@ import (
 	"github.com/joeyscat/ok-short/internal/msg"
 	"github.com/joeyscat/ok-short/pkg/codec"
 	"github.com/joeyscat/ok-short/pkg/setting"
-	"github.com/nats-io/nats.go"
+	stan "github.com/nats-io/go-nats-streaming"
+	"io"
 	"log"
 	"sync"
 )
 
 var (
-	d *dao.Dao
+	d             *dao.Dao
+	linkDetailSub stan.Subscription
+	linkTraceSub  stan.Subscription
 )
 
 func main() {
 	initEnv()
 	defer global.DBEngine.Close()
-	defer global.Nats.Close()
+	defer global.StanConn.Close()
 
 	d = dao.New(global.DBEngine)
 
 	wg := sync.WaitGroup{}
 	wg.Add(1)
-	_, err := global.Nats.Subscribe(global.NatsSetting.Subj.LinkDetail, linkDetailMsgHandler)
+	var err error
+	linkDetailSub, err = global.StanConn.Subscribe(global.NatsSetting.Subj.LinkDetail,
+		linkDetailMsgHandler,
+		stan.DurableName("i-will-remember"))
 	if err != nil {
 		wg.Done()
 		fmt.Println(err)
 	}
 
-	_, err = global.Nats.Subscribe(global.NatsSetting.Subj.LinkTrace, linkTraceMsgHandler)
+	linkTraceSub, err = global.StanConn.Subscribe(global.NatsSetting.Subj.LinkTrace,
+		linkTraceMsgHandler,
+		stan.DurableName("i-will-remember"))
 	if err != nil {
 		wg.Done()
 		fmt.Println(err)
@@ -40,11 +48,11 @@ func main() {
 	wg.Wait()
 }
 
-func linkDetailMsgHandler(nMsg *nats.Msg) {
+func linkDetailMsgHandler(m *stan.Msg) {
 	var linkMsg msg.LinkMsg
-	err := codec.Decoder(nMsg.Data, &linkMsg)
+	err := codec.Decoder(m.Data, &linkMsg)
 	if err != nil {
-		panic(err)
+		closeNatsSub(linkDetailSub)
 	}
 
 	fmt.Printf("subDbLink received: %+v\n", &linkMsg)
@@ -54,11 +62,11 @@ func linkDetailMsgHandler(nMsg *nats.Msg) {
 	}
 }
 
-func linkTraceMsgHandler(nMsg *nats.Msg) {
+func linkTraceMsgHandler(m *stan.Msg) {
 	var linkTraceMsg msg.LinkTraceMsg
-	err := codec.Decoder(nMsg.Data, &linkTraceMsg)
+	err := codec.Decoder(m.Data, &linkTraceMsg)
 	if err != nil {
-		panic(err)
+		closeNatsSub(linkTraceSub)
 	}
 
 	fmt.Printf("linkTrace received: %+v\n", &linkTraceMsg)
@@ -72,6 +80,12 @@ func linkTraceMsgHandler(nMsg *nats.Msg) {
 	_, err = d.CreateLinkTrace(l)
 	if err != nil {
 		panic(err)
+	}
+}
+
+func closeNatsSub(c io.Closer) {
+	if err := c.Close(); err != nil {
+		log.Fatalf("close error: %s", err)
 	}
 }
 
@@ -125,7 +139,7 @@ func setupDBEngine() error {
 
 func setupNats() error {
 	var err error
-	global.Nats, err = nats.Connect(global.NatsSetting.Url)
+	global.StanConn, err = stan.Connect("test-cluster", "async-db-01", stan.NatsURL(global.NatsSetting.Url))
 	if err != nil {
 		panic(err)
 	}

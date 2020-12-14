@@ -30,7 +30,7 @@ func (svc *Service) CreateLinkTrace(sc, url string, c *gin.Context) (*model.Link
 		Cookie: cookieStr,
 	}
 	msgBytes, err := codec.Encoder(m)
-	err = global.Nats.Publish(global.NatsSetting.Subj.LinkTrace, msgBytes)
+	err = global.StanConn.Publish(global.NatsSetting.Subj.LinkTrace, msgBytes)
 	return nil, err
 }
 

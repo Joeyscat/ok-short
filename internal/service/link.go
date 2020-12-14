@@ -46,7 +46,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	// 存储短链详情到数据库
 	linkMsg := &msg.LinkMsg{Sc: sc, URL: param.URL, Exp: param.ExpirationInMinutes}
 	msgBytes, err := codec.Encoder(linkMsg)
-	err = global.Nats.Publish(global.NatsSetting.Subj.LinkDetail, msgBytes)
+	err = global.StanConn.Publish(global.NatsSetting.Subj.LinkDetail, msgBytes)
 
 	return url, err
 }

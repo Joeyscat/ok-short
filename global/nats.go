@@ -1,7 +1,9 @@
 package global
 
-import "github.com/nats-io/nats.go"
+import (
+	stan "github.com/nats-io/go-nats-streaming"
+)
 
 var (
-	Nats *nats.Conn
+	StanConn stan.Conn
 )
