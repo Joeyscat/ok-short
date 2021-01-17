@@ -12,8 +12,8 @@ const (
 )
 
 type CreateLinkRequest struct {
-	URL                 string `json:"url" form:"url" binding:"required,min=20,max=200"`
-	ExpirationInMinutes uint32 `json:"expiration_in_minutes" form:"created_by" binding:"min=0,max=1440"`
+	URL                 string `json:"url" form:"url" validate:"required,min=20,max=200"`
+	ExpirationInMinutes uint32 `json:"expiration_in_minutes" form:"created_by" validate:"min=0,max=1440"`
 }
 
 type GetLinkRequest struct {

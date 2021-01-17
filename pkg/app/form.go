@@ -1,18 +1,24 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	ut "github.com/go-playground/universal-translator"
 	val "github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 	"strings"
 )
 
-type ValidError struct {
-	Key     string
-	Message string
-}
+type (
+	ValidError struct {
+		Key     string
+		Message string
+	}
 
-type ValidErrors []*ValidError
+	ValidErrors []*ValidError
+
+	CustomValidator struct {
+		validator *val.Validate
+	}
+)
 
 func (v *ValidError) Error() string {
 	return v.Message
@@ -31,11 +37,18 @@ func (v ValidErrors) Errors() []string {
 	return errs
 }
 
-func BindAndValid(c *gin.Context, v interface{}) (bool, ValidErrors) {
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
+}
+
+func NewValidator() *CustomValidator {
+	return &CustomValidator{validator: val.New()}
+}
+
+func BindAndValid(e echo.Context, v interface{}) (bool, ValidErrors) {
 	var errs ValidErrors
-	err := c.ShouldBind(v)
-	if err != nil {
-		v := c.Value("trans")
+	if err := e.Bind(v); err != nil {
+		v := e.Get("trans")
 		trans, _ := v.(ut.Translator)
 		verrs, ok := err.(val.ValidationErrors)
 		if !ok {
@@ -50,5 +63,10 @@ func BindAndValid(c *gin.Context, v interface{}) (bool, ValidErrors) {
 		}
 		return false, errs
 	}
+
+	if err := e.Validate(v); err != nil {
+		return false, ValidErrors{&ValidError{Key: "", Message: err.Error()}}
+	}
+
 	return true, nil
 }

@@ -1,22 +1,25 @@
 package service
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/labstack/echo/v4"
 )
 
 type GetLinkTraceRequest struct {
 	Sc string `json:"sc" form:"sc" binding:"required"`
 }
 
-func (svc *Service) CreateLinkTrace(sc, url string, c *gin.Context) error {
-	ip := c.ClientIP()
-	ua := c.Request.UserAgent()
-	cookies := c.Request.Cookies()
+func (svc *Service) CreateLinkTrace(sc, url string, c echo.Context) error {
+	ip := c.RealIP()
+	ua := c.Request().UserAgent()
+	cookies := c.Request().Cookies()
 	var cookieStr string
 	for _, cookie := range cookies {
 		cookieStr += cookie.Name + ":" + cookie.Value + "&"
+	}
+	if len(cookieStr) > 2 {
+		cookieStr = cookieStr[:len(cookieStr)-2]
 	}
 	lt := &model.LinkTrace{
 		Sc:     sc,

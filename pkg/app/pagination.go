@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/pkg/convert"
+	"github.com/labstack/echo/v4"
 )
 
 var (
@@ -10,16 +10,16 @@ var (
 	maxPageSize      = 40
 )
 
-func GetPage(c *gin.Context) int {
-	page := convert.StrTo(c.Query("page")).MustInt()
+func GetPage(c echo.Context) int {
+	page := convert.StrTo(c.QueryParam("page")).MustInt()
 	if page <= 0 {
 		return 1
 	}
 	return page
 }
 
-func GetPageSize(c *gin.Context) int {
-	pageSize := convert.StrTo(c.Query("page_size")).MustInt()
+func GetPageSize(c echo.Context) int {
+	pageSize := convert.StrTo(c.QueryParam("page_size")).MustInt()
 	if pageSize <= 0 {
 		return defaultSPageSize
 	}

@@ -116,8 +116,8 @@ func SetupMongoDB() error {
 	}
 	MongoOkShortDB = mongoDB.Database("ok-short")
 	MongoLinksColl = MongoOkShortDB.Collection("links")
-	MongoLinksTraceColl = MongoOkShortDB.Collection("links-trace")
-	MongoAuths = MongoOkShortDB.Collection("auths")
+	MongoLinksTraceColl = MongoOkShortDB.Collection("links_traces")
+	MongoAuthsColl = MongoOkShortDB.Collection("auths")
 
 	return nil
 }

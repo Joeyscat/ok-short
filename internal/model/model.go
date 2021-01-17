@@ -1,9 +1,5 @@
 package model
 
-import (
-	_ "github.com/jinzhu/gorm/dialects/mysql"
-)
-
 //func NewRedis(s *setting.RedisSettingS) *redis.Client {
 //	client := redis.NewClient(&redis.Options{
 //		Addr:     s.Addr,

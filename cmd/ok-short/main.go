@@ -1,11 +1,9 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internal/routers"
-	"log"
-	"net/http"
+	"github.com/joeyscat/ok-short/internal/routers/api/v2"
+	"github.com/joeyscat/ok-short/pkg/app"
 )
 
 // @title 短链接服务
@@ -16,18 +14,9 @@ func main() {
 	global.InitEnv()
 	defer global.Redis.Close()
 
-	gin.SetMode(global.ServerSetting.RunMode)
-	router := routers.NewRouter()
-	s := &http.Server{
-		Addr:           ":" + global.ServerSetting.HttpPort,
-		Handler:        router,
-		ReadTimeout:    global.ServerSetting.ReadTimeout,
-		WriteTimeout:   global.ServerSetting.WriteTimeout,
-		MaxHeaderBytes: 1 << 20,
-	}
-	defer s.Close()
-	err := s.ListenAndServe()
-	if err != nil {
-		log.Fatalf("server err: %v", err)
-	}
+	e := v2.NewRouter()
+	e.Validator = app.NewValidator()
+
+	//e.Debug = true
+	e.Logger.Fatal(e.Start(":" + global.ServerSetting.HttpPort))
 }

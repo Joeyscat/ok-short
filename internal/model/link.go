@@ -45,6 +45,10 @@ func GetLinkBySc(sc string) (link string, err error) {
 		bson.M{"sc": sc}).Select(bson.M{"_id": 0, "origin_url": 1}).One(l)
 	link = l.OriginURL
 
+	if err == mongo.ErrNoDocuments {
+		return "", nil
+	}
+
 	return
 }
 
@@ -60,12 +64,9 @@ func GetLinkList(page, pageSize int64) (list []*Link, err error) {
 	return
 }
 
-func CreateIndex() {
-	err := global.MongoLinksColl.CreateIndexes(
+func CreateIndex() error {
+	return global.MongoLinksColl.CreateIndexes(
 		context.Background(),
 		[]options.IndexModel{{Key: []string{"sc", "origin_url"}}},
 	)
-	if err != nil {
-		panic(err)
-	}
 }

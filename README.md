@@ -2,12 +2,10 @@
 Short link service built on golang
 
 ### Build On
-* gin
-* gorm
+* echo
+* qmgo
 * redis
-* mysql
-* nats-streaming
-* swagger
+* mongodb
 
 [![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
 
@@ -17,9 +15,9 @@ Short link service built on golang
 * Query the original link through the short link
 
 ### Prepare the environment
+
 1. redis
-2. mysql
-3. nats-streaming
+2. mongodb
 
 Set up the above environment and modify the configs/config.yaml
 

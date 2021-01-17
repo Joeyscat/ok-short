@@ -2,21 +2,32 @@ package service
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/internal/model"
 	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
 func TestService_CreateLinkTrace(t *testing.T) {
+	e := echo.New()
+	req := httptest.NewRequest(http.MethodGet, "/", strings.NewReader(""))
+	req.Header.Set("X-Real-IP", "10.10.10.10")
+	req.Header.Set("User-Agent", "ok-short-test")
+	req.Header.Set("Cookie", "ok-short-test")
+	req.UserAgent()
+	c := e.NewContext(req, httptest.NewRecorder())
+
 	type fields struct {
 		ctx context.Context
 	}
 	type args struct {
 		sc  string
 		url string
-		c   *gin.Context
+		e   echo.Context
 	}
 	tests := []struct {
 		name    string
@@ -30,9 +41,9 @@ func TestService_CreateLinkTrace(t *testing.T) {
 				ctx: context.Background(),
 			},
 			args: args{
-				sc:  "aaa",
-				url: "https://www.google.com/search?newwindow=1&client=firefox-b-d&sxsrf=ALeKk002xTpPWf3ybePeApicIIRNFKjNtw%3A1610810423423&ei=NwQDYMCqGdrCz7sP36uHyAQ&q=mgo+find+options+&oq=mgo+find+options+&gs_lcp=CgZwc3ktYWIQA1DnSljda2C2cmgBcAB4AIAB7AKIAa0JkgEHMC43LjAuMZgBAKABAaoBB2d3cy13aXrAAQE&sclient=psy-ab&ved=0ahUKEwiAotq44KDuAhVa4XMBHd_VAUkQ4dUDCAw&uact=5",
-				c:   nil,
+				sc:  "MjJe",
+				url: "https://echo.labstack.com/guide/testing",
+				e:   c,
 			},
 			wantErr: false,
 		},
@@ -43,7 +54,7 @@ func TestService_CreateLinkTrace(t *testing.T) {
 			svc := &Service{
 				ctx: tt.fields.ctx,
 			}
-			if err := svc.CreateLinkTrace(tt.args.sc, tt.args.url, tt.args.c); (err != nil) != tt.wantErr {
+			if err := svc.CreateLinkTrace(tt.args.sc, tt.args.url, tt.args.e); (err != nil) != tt.wantErr {
 				t.Errorf("CreateLinkTrace() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})

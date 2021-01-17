@@ -13,7 +13,7 @@ var (
 	MongoOkShortDB      *qmgo.Database
 	MongoLinksColl      *qmgo.Collection
 	MongoLinksTraceColl *qmgo.Collection
-	MongoAuths          *qmgo.Collection
+	MongoAuthsColl      *qmgo.Collection
 )
 
 func NewRedis(s *setting.RedisSettingS) *redis.Client {

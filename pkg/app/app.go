@@ -1,13 +1,13 @@
 package app
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/joeyscat/ok-short/pkg/errcode"
+	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type Response struct {
-	Ctx *gin.Context
+	Ctx echo.Context
 }
 
 type Pager struct {
@@ -16,21 +16,21 @@ type Pager struct {
 	TotalRows int `json:"total_rows"`
 }
 
-func NewResponse(ctx *gin.Context) *Response {
+func NewResponse(ctx echo.Context) *Response {
 	return &Response{
 		Ctx: ctx,
 	}
 }
 
-func (r *Response) ToResponse(data interface{}) {
+func (r *Response) ToResponse(data interface{}) error {
 	if data == nil {
-		data = gin.H{}
+		data = map[string]interface{}{}
 	}
-	r.Ctx.JSON(http.StatusOK, data)
+	return r.Ctx.JSON(http.StatusOK, data)
 }
 
-func (r *Response) ToResponseList(list interface{}, totalRows int) {
-	r.Ctx.JSON(http.StatusOK, gin.H{
+func (r *Response) ToResponseList(list interface{}, totalRows int) error {
+	return r.Ctx.JSON(http.StatusOK, map[string]interface{}{
 		"list": list,
 		"pager": Pager{
 			Page:      GetPage(r.Ctx),
@@ -40,11 +40,11 @@ func (r *Response) ToResponseList(list interface{}, totalRows int) {
 	})
 }
 
-func (r *Response) ToErrorResponse(err *errcode.Error) {
-	response := gin.H{"code": err.Code(), "msg": err.Msg()}
+func (r *Response) ToErrorResponse(err *errcode.Error) error {
+	response := map[string]interface{}{"code": err.Code(), "msg": err.Msg()}
 	details := err.Details()
 	if len(details) > 0 {
 		response["details"] = details
 	}
-	r.Ctx.JSON(err.StatusCode(), response)
+	return r.Ctx.JSON(err.StatusCode(), response)
 }

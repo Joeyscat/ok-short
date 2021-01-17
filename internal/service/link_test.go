@@ -225,5 +225,7 @@ func Test_genId(t *testing.T) {
 func TestCreateIndex(t *testing.T) {
 	setup()
 
-	model.CreateIndex()
+	err := model.CreateIndex()
+
+	assert.Nil(t, err)
 }
