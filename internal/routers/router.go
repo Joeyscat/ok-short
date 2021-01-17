@@ -5,7 +5,6 @@ import (
 	_ "github.com/joeyscat/ok-short/docs"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internal/middleware"
-	"github.com/joeyscat/ok-short/internal/routers/api"
 	v1 "github.com/joeyscat/ok-short/internal/routers/api/v1"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -30,9 +29,7 @@ func NewRouter() *gin.Engine {
 	link := v1.NewLink()
 	linkTrace := v1.NewLinkTrace()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	//r.POST("/auth", api.GetAuth)
 
-	r.GET("/auth", api.GetAuth)
 	// 短链接跳转
 	// 这里 /a 是因为gin不能在跟路径进行匹配
 	r.GET("/a/:sc", link.Redirect)
@@ -40,6 +37,8 @@ func NewRouter() *gin.Engine {
 	apiV1.Use() //middleware.JWT()
 	apiV1.Use(middleware.RequestLimit())
 	{
+		apiV1.GET("/auth", v1.GetAuth)
+
 		// 创建短链接
 		apiV1.POST("/links", link.Shorten)
 		apiV1.GET("/links/:sc", link.Get)

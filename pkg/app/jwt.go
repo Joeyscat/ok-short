@@ -2,7 +2,6 @@ package app
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/pkg/util"
 	"time"
 )
@@ -13,19 +12,28 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
+type Jwt struct {
+	Secret string
+	Expire time.Duration
+	Issuer string
+}
+
+// TODO init jwt
+var jwt_ Jwt
+
 func GetJWTSecret() []byte {
-	return []byte(global.JWTSetting.Secret)
+	return []byte(jwt_.Secret)
 }
 
 func GenerateToken(appKey, appSecret string) (string, error) {
 	nowTime := time.Now()
-	expireTime := nowTime.Add(global.JWTSetting.Expire)
+	expireTime := nowTime.Add(jwt_.Expire)
 	claims := Claims{
 		AppKey:    util.EncodeMD5(appKey),
 		AppSecret: util.EncodeMD5(appSecret),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
-			Issuer:    global.JWTSetting.Issuer,
+			Issuer:    jwt_.Issuer,
 		},
 	}
 

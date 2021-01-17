@@ -6,11 +6,10 @@ import (
 )
 
 var (
-	ServerSetting   *setting.ServerSettingS
-	AppSetting      *setting.AppSettingS
-	DatabaseSetting *setting.DatabaseSettingS
-	RedisSetting    *setting.RedisSettingS
-	NatsSetting     *setting.NatsSetting
-	Logger          *logger.Logger
-	JWTSetting      *setting.JWTSettingS
+	ServerSetting  *setting.ServerSettingS
+	AppSetting     *setting.AppSettingS
+	MongoDBSetting *setting.MongoDBSettingS
+	RedisSetting   *setting.RedisSettingS
+	Logger         *logger.Logger
+	JWTSetting     *setting.JWTSettingS
 )

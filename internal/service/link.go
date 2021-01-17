@@ -1,20 +1,14 @@
 package service
 
 import (
-	"fmt"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internal/model"
-	"github.com/joeyscat/ok-short/internal/msg"
 	"github.com/joeyscat/ok-short/pkg/app"
-	"github.com/joeyscat/ok-short/pkg/codec"
-	"time"
 )
 
 const (
 	// URLIdKey redis自增主键所用的key
 	URLIdKey = "next.url.id"
-	// LinkKey 用于保存短链与原始链接的映射
-	LinkKey = "link:%s:url"
 )
 
 type CreateLinkRequest struct {
@@ -36,37 +30,24 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	sc := app.Base62Encode(id)
 	url := global.AppSetting.LinkPrefix + sc
 
-	// 存储短链接代码与原链接的映射到Redis SC:URL
-	expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
-	err = global.Redis.Set(fmt.Sprintf(LinkKey, sc), param.URL, expiration).Err()
-	if err != nil {
-		return "", err
-	}
+	//expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
 	// TODO 定时清理过期数据
-	// 存储短链详情到数据库
-	linkMsg := &msg.LinkMsg{Sc: sc, URL: param.URL, Exp: param.ExpirationInMinutes}
-	msgBytes, err := codec.Encoder(linkMsg)
-	err = global.StanConn.Publish(global.NatsSetting.Subj.LinkDetail, msgBytes)
+	_, err = model.CreateLink(sc, param.URL, param.ExpirationInMinutes)
 
 	return url, err
 }
 
 func (svc *Service) UnShorten(param *RedirectLinkRequest) (string, error) {
-	return global.Redis.Get(fmt.Sprintf(LinkKey, param.Sc)).Result()
-	//link, err := svc.dao.GetLink(param.Sc)
-	//if err != nil {
-	//	return "", err
-	//}
-	//return link.OriginURL, nil
+	//return global.Redis.Get(fmt.Sprintf(LinkKey, param.Sc)).Result()
+	return model.GetLinkBySc(param.Sc)
 }
 
 func (svc *Service) GetLink(param *GetLinkRequest) (*model.Link, error) {
-	return svc.dao.GetLink(param.Sc)
+	return model.GetLinkDetailBySc(param.Sc)
 }
 
 func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
-	return svc.dao.GetLinkList(pager.Page, pager.PageSize)
-	// TODO DO -> VO
+	return model.GetLinkList(int64(pager.Page), int64(pager.PageSize))
 }
 
 func genId() (int64, error) {

@@ -2,8 +2,12 @@ package app
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/pkg/convert"
+)
+
+var (
+	defaultSPageSize = 20
+	maxPageSize      = 40
 )
 
 func GetPage(c *gin.Context) int {
@@ -17,10 +21,10 @@ func GetPage(c *gin.Context) int {
 func GetPageSize(c *gin.Context) int {
 	pageSize := convert.StrTo(c.Query("page_size")).MustInt()
 	if pageSize <= 0 {
-		return global.AppSetting.DefaultPageSize
+		return defaultSPageSize
 	}
-	if pageSize > global.AppSetting.MaxPageSize {
-		return global.AppSetting.MaxPageSize
+	if pageSize > maxPageSize {
+		return maxPageSize
 	}
 	return pageSize
 }

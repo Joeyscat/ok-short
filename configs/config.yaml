@@ -11,18 +11,12 @@ App:
   LogFileExt: .log
   LinkPrefix: http://sc.vaiwan.com/a/ # 服务器所在域名
   RequestLimit: 1000 # 请求限制的时间间隔，单位毫秒
-Database:
-  DBType: mysql
-  UserName: miao
+MongoDB:
+  User: ok-short
   Password: 123456
-  Host: 192.168.50.20
-  DBName: ok-short
-  TablePrefix: ok_
-  Charset: utf8
-  ParseTime: True
-  MaxIdleConns: 10
-  MaxOpenConns: 30
-  LogMode: true
+  AuthDB: ok-short
+  Addr:
+    192.168.50.20:27017
 Redis:
   Addr: 192.168.50.20:6379
   Password: ""
@@ -31,10 +25,3 @@ JWT:
   Secret: new_secret
   Issuer: ok-short
   Expire: 7200
-Nats:
-  Url: nats://192.168.50.20:4222
-  Queue:
-    Link: link-queue
-  Subj:
-    LinkDetail: async.db.linkdetail
-    LinkTrace: async.db.linktrace

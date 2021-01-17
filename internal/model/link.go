@@ -1,64 +1,71 @@
 package model
 
 import (
-	"github.com/jinzhu/gorm"
-	"github.com/joeyscat/ok-short/pkg/app"
+	"context"
+	"github.com/joeyscat/ok-short/global"
+	"github.com/qiniu/qmgo/field"
+	"github.com/qiniu/qmgo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-const (
-	StatueOpen  = "已启用"
-	StatueClose = "已禁用"
-)
+type Link struct {
+	field.DefaultField `bson:",inline"`
 
-// Link 短链结构体
-type Link struct { // TODO
-	*Model
-	Sid       string // 业务标识
-	Sc        string // 短链代码
-	Status    string
-	OriginURL string `gorm:"origin_url"` // 原始链接
-	Exp       uint32
+	Sc        string `bson:"sc" json:"sc"`                 // 短链代码
+	Status    string `bson:"status" json:"status"`         // 短链状态
+	OriginURL string `bson:"origin_url" json:"origin_url"` // 原始链接
+	Exp       uint32 `bson:"exp" json:"exp"`               // 过期时间
 }
 
-func (Link) TableName() string {
-	return "ok_link"
-}
-
-// 追踪访问量等信息
-type Trace struct {
-}
-
-type LinkSwagger struct {
-	List  []*Link
-	Pager *app.Pager
-}
-
-func (l Link) Create(db *gorm.DB) (*Link, error) {
-	if err := db.Create(&l).Error; err != nil {
-		return nil, err
+func CreateLink(sc string, originalURL string, exp uint32) (*Link, error) {
+	l := &Link{
+		Sc:        sc,
+		OriginURL: originalURL,
+		Exp:       exp,
 	}
-	return &l, nil
+	_, err := global.MongoLinksColl.InsertOne(context.Background(), l)
+	return l, err
 }
 
-func (l Link) GetBySc(db *gorm.DB) (*Link, error) {
-	var link Link
-	db = db.Where("sc = ?", l.Sc)
-	err := db.First(&link).Error
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return nil, err
+func GetLinkDetailBySc(sc string) (l *Link, err error) {
+	l = &Link{}
+	err = global.MongoLinksColl.Find(context.Background(),
+		bson.M{"sc": sc}).One(l)
+	if err == mongo.ErrNilDocument {
+		return l, nil
 	}
-	return &link, nil
+	return
 }
 
-func (l Link) List(db *gorm.DB, pageOffset, pageSize int) ([]*Link, error) {
-	var links []*Link
-	var err error
-	if pageOffset >= 0 && pageSize > 0 {
-		db = db.Offset(pageOffset).Limit(pageSize)
-	}
-	if err = db.Find(&links).Error; err != nil {
-		return nil, err
+func GetLinkBySc(sc string) (link string, err error) {
+	l := &Link{}
+	// 覆盖索引
+	err = global.MongoLinksColl.Find(context.Background(),
+		bson.M{"sc": sc}).Select(bson.M{"_id": 0, "origin_url": 1}).One(l)
+	link = l.OriginURL
+
+	return
+}
+
+func GetLinkList(page, pageSize int64) (list []*Link, err error) {
+	list = []*Link{}
+
+	err = global.MongoLinksColl.Find(context.Background(),
+		bson.M{}).Skip(pageSize * page).Limit(pageSize).All(&list)
+	if err == mongo.ErrNilDocument {
+		return list, nil
 	}
 
-	return links, nil
+	return
+}
+
+func CreateIndex() {
+	err := global.MongoLinksColl.CreateIndexes(
+		context.Background(),
+		[]options.IndexModel{{Key: []string{"sc", "origin_url"}}},
+	)
+	if err != nil {
+		panic(err)
+	}
 }
