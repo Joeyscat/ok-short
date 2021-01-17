@@ -1,53 +1,46 @@
 package model
 
-import "github.com/jinzhu/gorm"
+import (
+	"context"
+	"github.com/joeyscat/ok-short/global"
+	"github.com/qiniu/qmgo/field"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+)
 
 type LinkTrace struct {
-	*Model
-	Sc     string
-	URL    string `gorm:"url"` // TODO remove
-	Ip     string `gorm:"ip"`
-	UA     string `gorm:"ua"`
-	Cookie string `gorm:"cookie"`
+	field.DefaultField `bson:",inline"`
+
+	Sc     string `bson:"sc"`
+	URL    string `bson:"url"`
+	Ip     string `bson:"ip"`
+	UA     string `bson:"ua"`
+	Cookie string `bson:"cookie"`
 }
 
-func (LinkTrace) TableName() string {
-	return "ok_link_trace"
+func CreateLinkTrace(lt *LinkTrace) error {
+	_, err := global.MongoLinksTraceColl.InsertOne(context.Background(), lt)
+	return err
 }
 
-func (lt LinkTrace) Create(db *gorm.DB) (*LinkTrace, error) {
-	if err := db.Create(&lt).Error; err != nil {
-		return nil, err
+func GetLinkTraceList(page, pageSize int64) (lt []*LinkTrace, err error) {
+	lt = []*LinkTrace{}
+
+	err = global.MongoLinksTraceColl.Find(context.Background(),
+		nil).Skip(pageSize * page).Limit(pageSize).All(&lt)
+	if err == mongo.ErrNilDocument {
+		return lt, nil
 	}
-	return &lt, nil
+	return
 }
 
-func (lt LinkTrace) Get(db *gorm.DB) (*LinkTrace, error) {
-	if err := db.Find(&lt).Error; err != nil {
-		return nil, err
-	}
-	return &lt, nil
-}
+func GetLinkTraceListBySc(sc string, page, pageSize int64) (lt []*LinkTrace, err error) {
+	lt = []*LinkTrace{}
 
-func (lt LinkTrace) List(db *gorm.DB, pageOffset, pageSize int) ([]*LinkTrace, error) {
-	var traces []*LinkTrace
-	var err error
-	if pageOffset >= 0 && pageSize > 0 {
-		db = db.Offset(pageOffset).Limit(pageSize)
+	err = global.MongoLinksTraceColl.Find(context.Background(),
+		bson.M{"sc": sc}).Skip(pageSize * page).Limit(pageSize).All(&lt)
+	if err == mongo.ErrNilDocument {
+		return lt, nil
 	}
-	if lt.Sc != "" {
-		db = db.Where("sc = ?", lt.Sc)
-	}
-	if lt.URL != "" {
-		db = db.Where("url = ?", lt.URL)
-	}
-	if err = db.Find(&traces).Error; err != nil {
-		return nil, err
-	}
-
-	return traces, nil
-}
-
-func (lt LinkTrace) ListByURL(db *gorm.DB, url string) ([]*LinkTrace, error) {
-	return nil, nil
+	return
 }

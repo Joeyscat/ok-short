@@ -21,30 +21,17 @@ type AppSettingS struct {
 	RequestLimit    time.Duration
 }
 
-type DatabaseSettingS struct {
-	DBType       string
-	UserName     string
-	Password     string
-	Host         string
-	DBName       string
-	TablePrefix  string
-	Charset      string
-	ParseTime    bool
-	MaxIdleConns int
-	MaxOpenConns int
-	LogMode      bool
+type MongoDBSettingS struct {
+	Addr     []string
+	User     string
+	Password string
+	AuthDB   string
 }
 
 type RedisSettingS struct {
 	Addr     string
 	Password string
 	DB       int
-}
-
-type NatsSetting struct {
-	Url   string
-	Subj  NatsSubj
-	Queue NatsQueue
 }
 
 type NatsQueue struct {

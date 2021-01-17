@@ -72,7 +72,7 @@ func (t Link) Redirect(c *gin.Context) {
 	}
 
 	// save link trace
-	_, err = svc.CreateLinkTrace(sc, link, c)
+	err = svc.CreateLinkTrace(sc, link, c)
 	if err != nil {
 		global.Logger.Errorf(c, "svc.CreateLinkTrace err: %v", err)
 	}
