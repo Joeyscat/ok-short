@@ -3,6 +3,7 @@ package global
 import (
 	"errors"
 	"fmt"
+	"github.com/joeyscat/ok-short/pkg/app"
 	"github.com/joeyscat/ok-short/pkg/logger"
 	"github.com/joeyscat/ok-short/pkg/setting"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -31,6 +32,11 @@ func InitEnv() {
 	err = SetupLogger()
 	if err != nil {
 		log.Fatalf("SetupLogger err: %v", err)
+	}
+
+	err = SetupJWT()
+	if err != nil {
+		log.Fatalf("SetupJWT err: %v", err)
 	}
 }
 
@@ -128,5 +134,10 @@ func SetupRedis() error {
 		return fmt.Errorf("cnnnect redis failed")
 	}
 
+	return nil
+}
+
+func SetupJWT() error {
+	app.SetJWT(JWTSetting.Secret, JWTSetting.Issuer, JWTSetting.Expire)
 	return nil
 }

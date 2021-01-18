@@ -2,59 +2,58 @@ package app
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/joeyscat/ok-short/pkg/util"
+	"github.com/dgrijalva/jwt-go/request"
+	"net/http"
 	"time"
 )
 
 type Claims struct {
-	AppKey    string `json:"app_key"`
-	AppSecret string `json:"app_secret"`
+	Uid string `json:"uid"`
 	jwt.StandardClaims
 }
 
 type Jwt struct {
-	Secret string
-	Expire time.Duration
-	Issuer string
+	Secret string        // 加密的key
+	Expire time.Duration // 过期时间
+	Issuer string        // 签发人
 }
 
-// TODO init jwt
 var jwt_ Jwt
 
-func GetJWTSecret() []byte {
+func SetJWT(secret, issuer string, expire time.Duration) {
+	jwt_ = Jwt{
+		Secret: secret,
+		Expire: expire,
+		Issuer: issuer,
+	}
+}
+
+func getJWTSecret() []byte {
 	return []byte(jwt_.Secret)
 }
 
-func GenerateToken(appKey, appSecret string) (string, error) {
+func GenerateToken(uid string) (string, error) {
+
 	nowTime := time.Now()
 	expireTime := nowTime.Add(jwt_.Expire)
 	claims := Claims{
-		AppKey:    util.EncodeMD5(appKey),
-		AppSecret: util.EncodeMD5(appSecret),
+		Uid: uid,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expireTime.Unix(),
 			Issuer:    jwt_.Issuer,
 		},
 	}
 
-	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	token, err := tokenClaims.SignedString(GetJWTSecret())
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token, err := tokenClaims.SignedString(getJWTSecret())
 	return token, err
 }
 
-func ParseToken(token string) (*Claims, error) {
-	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return GetJWTSecret(), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	if tokenClaims != nil {
-		claims, ok := tokenClaims.Claims.(*Claims)
-		if ok && tokenClaims.Valid {
-			return claims, nil
-		}
-	}
-
-	return nil, err
+func ParseFromRequest(r *http.Request, extractor request.Extractor) (*jwt.Token, error) {
+	return request.ParseFromRequest(
+		r,
+		extractor,
+		func(token *jwt.Token) (interface{}, error) {
+			return []byte(jwt_.Secret), nil
+		})
 }

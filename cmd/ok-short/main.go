@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/joeyscat/ok-short/global"
 	"github.com/joeyscat/ok-short/internal/routers/api/v2"
-	"github.com/joeyscat/ok-short/pkg/app"
 )
 
 // @title 短链接服务
@@ -15,7 +14,6 @@ func main() {
 	defer global.Redis.Close()
 
 	e := v2.NewRouter()
-	e.Validator = app.NewValidator()
 
 	//e.Debug = true
 	e.Logger.Fatal(e.Start(":" + global.ServerSetting.HttpPort))

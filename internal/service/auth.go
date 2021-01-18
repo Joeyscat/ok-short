@@ -11,6 +11,11 @@ type AuthRequest struct {
 	AppSecret string `form:"app_secret" binding:"required"`
 }
 
+type User struct {
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
 func (svc Service) CreateAuth(param *AuthRequest) error {
 	if strings.Contains(param.AppKey, " ") || strings.Contains(param.AppSecret, " ") ||
 		param.AppKey == "" || param.AppSecret == "" {
