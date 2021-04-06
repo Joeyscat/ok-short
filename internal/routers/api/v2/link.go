@@ -31,7 +31,7 @@ func (t Link) Shorten(e echo.Context) error {
 		return response.ToErrorResponse(errcode.ErrorCreateLinkFail)
 	}
 
-	return response.ToResponse(map[string]interface{}{"link": link, "code": 0})
+	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code()})
 }
 
 func (t Link) Redirect(e echo.Context) error {
@@ -82,7 +82,7 @@ func (t Link) Get(e echo.Context) error {
 		return response.ToErrorResponse(errcode.ErrorGetLinkFail)
 	}
 
-	return response.ToResponse(map[string]interface{}{"link": link, "code": 0})
+	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code()})
 }
 
 func (t Link) List(e echo.Context) error {
@@ -96,5 +96,5 @@ func (t Link) List(e echo.Context) error {
 		return response.ToErrorResponse(errcode.ErrorGetLinkListFail)
 	}
 
-	return response.ToResponse(map[string]interface{}{"link": link, "code": 0})
+	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code()})
 }

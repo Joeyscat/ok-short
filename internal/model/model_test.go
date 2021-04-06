@@ -26,10 +26,10 @@ func TestNewMongoDB(t *testing.T) {
 			name: "test_1",
 			args: args{
 				s: &setting.MongoDBSettingS{
-					Addr:     []string{"192.168.50.20:27017"},
-					User:     "ok-short",
+					Addr:     []string{"192.168.50.119:27017"},
+					User:     "ok-short_rw",
 					Password: "123456",
-					AuthDB:   "ok-short",
+					AuthDB:   "db_ok_short",
 				},
 			},
 			want:    nil,

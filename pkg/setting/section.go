@@ -12,6 +12,10 @@ type ServerSettingS struct {
 }
 
 type AppSettingS struct {
+	RunMode         string
+	HttpPort        string
+	ReadTimeout     time.Duration
+	WriteTimeout    time.Duration
 	DefaultPageSize int
 	MaxPageSize     int
 	LogSavePath     string
@@ -19,6 +23,7 @@ type AppSettingS struct {
 	LogFileExt      string
 	LinkPrefix      string
 	RequestLimit    time.Duration
+	AllowOrigins    []string
 }
 
 type MongoDBSettingS struct {
@@ -32,21 +37,6 @@ type RedisSettingS struct {
 	Addr     string
 	Password string
 	DB       int
-}
-
-type NatsQueue struct {
-	Link string
-}
-
-type NatsSubj struct {
-	LinkDetail string
-	LinkTrace  string
-}
-
-type JWTSettingS struct {
-	Secret string
-	Issuer string
-	Expire time.Duration
 }
 
 var sections = make(map[string]interface{})

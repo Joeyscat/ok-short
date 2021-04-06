@@ -39,13 +39,6 @@ func SetupSetting() error {
 	if err != nil {
 		return err
 	}
-	err = s.ReadSection("Server", &ServerSetting)
-	if err != nil {
-		return err
-	}
-	if ServerSetting == nil {
-		return errors.New("Configuration not found: ServerSetting. ")
-	}
 	err = s.ReadSection("App", &AppSetting)
 	if err != nil {
 		return err
@@ -67,20 +60,11 @@ func SetupSetting() error {
 	if RedisSetting == nil {
 		return errors.New("Configuration not found: RedisSetting. ")
 	}
-	err = s.ReadSection("JWT", &JWTSetting)
-	if err != nil {
-		return err
-	}
-	if JWTSetting == nil {
-		return errors.New("Configuration not found: JWTSetting. ")
-	}
 
-	ServerSetting.ReadTimeout *= time.Second
-	ServerSetting.WriteTimeout *= time.Second
-	JWTSetting.Expire *= time.Second
+	AppSetting.ReadTimeout *= time.Second
+	AppSetting.WriteTimeout *= time.Second
 
-	if ServerSetting.RunMode == "debug" {
-		log.Printf("ServerSetting: %v", ServerSetting)
+	if AppSetting.RunMode == "debug" {
 		log.Printf("AppSetting: %v", AppSetting)
 		log.Printf("Redis: %v", RedisSetting)
 	}
@@ -90,7 +74,7 @@ func SetupSetting() error {
 
 func SetupLogger() error {
 	var w io.Writer
-	if ServerSetting.RunMode == "debug" {
+	if AppSetting.RunMode == "debug" {
 		w = os.Stdout
 	} else {
 		w = &lumberjack.Logger{
@@ -114,7 +98,7 @@ func SetupMongoDB() error {
 	if err != nil {
 		return err
 	}
-	MongoOkShortDB = mongoDB.Database("ok-short")
+	MongoOkShortDB = mongoDB.Database(MongoDBSetting.AuthDB)
 	MongoLinksColl = MongoOkShortDB.Collection("links")
 	MongoLinksTraceColl = MongoOkShortDB.Collection("links_traces")
 	MongoAuthsColl = MongoOkShortDB.Collection("auths")

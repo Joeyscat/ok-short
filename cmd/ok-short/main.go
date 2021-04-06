@@ -18,5 +18,5 @@ func main() {
 	e.Validator = app.NewValidator()
 
 	//e.Debug = true
-	e.Logger.Fatal(e.Start(":" + global.ServerSetting.HttpPort))
+	e.Logger.Fatal(e.Start(":" + global.AppSetting.HttpPort))
 }

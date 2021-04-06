@@ -1,9 +1,8 @@
-Server:
+App:
   RunMode: debug
   HttpPort: 8700
   ReadTimeout: 60
   WriteTimeout: 60
-App:
   DefaultPageSize: 10
   MaxPageSize: 100
   LogSavePath: logs
@@ -12,17 +11,15 @@ App:
   LinkPrefix: http://sc.vaiwan.com/ # 服务器所在域名
   RequestLimit: 1000 # 请求限制的时间间隔，单位毫秒
   NotFoundPage: http://oook.fun/404
+  AllowOrigins:
+    - http://localhost:8000
 MongoDB:
-  User: ok-short
+  User: ok-short_rw
   Password: 123456
-  AuthDB: ok-short
+  AuthDB: db_ok_short
   Addr:
-    192.168.50.20:27017
+    192.168.50.119:27017
 Redis:
-  Addr: 192.168.50.20:6379
+  Addr: 192.168.50.119:6379
   Password: ""
   DB: 0
-JWT:
-  Secret: new_secret
-  Issuer: ok-short
-  Expire: 7200

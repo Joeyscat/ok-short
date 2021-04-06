@@ -2,6 +2,7 @@ package v2
 
 import (
 	_ "github.com/joeyscat/ok-short/docs"
+	"github.com/joeyscat/ok-short/global"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"net/http"
@@ -11,8 +12,12 @@ func NewRouter() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	allowOrigins := global.AppSetting.AllowOrigins
+	if allowOrigins == nil || len(allowOrigins) == 0 {
+		panic("allowOrigins should not be empty")
+	}
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://oook.fun", "http://u.oook.fun"},
+		AllowOrigins: allowOrigins,
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 
