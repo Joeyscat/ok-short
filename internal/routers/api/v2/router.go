@@ -1,11 +1,12 @@
 package v2
 
 import (
+	"net/http"
+
 	_ "github.com/joeyscat/ok-short/docs"
 	"github.com/joeyscat/ok-short/global"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
 )
 
 func NewRouter() *echo.Echo {
@@ -26,8 +27,6 @@ func NewRouter() *echo.Echo {
 	linkTrace := NewLinkTrace()
 	e.GET("/:sc", link.Redirect)
 	{
-		apiV2.GET("/auth", GetAuth)
-
 		// 创建短链接
 		apiV2.POST("/links", link.Shorten)
 		apiV2.GET("/links/:sc", link.Get)

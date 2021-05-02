@@ -31,9 +31,6 @@ github.com/davecgh/go-spew/spew
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
-# github.com/franela/goblin v0.0.0-20210113153425-413781f5e6c8
-## explicit
-github.com/franela/goblin
 # github.com/fsnotify/fsnotify v1.4.9
 github.com/fsnotify/fsnotify
 # github.com/go-openapi/jsonpointer v0.19.3
