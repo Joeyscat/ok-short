@@ -1,15 +1,15 @@
 package model
 
 import (
-	"context"
-	"github.com/go-redis/redis"
-	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/pkg/setting"
-	"github.com/stretchr/testify/assert"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"reflect"
-	"testing"
+    "context"
+    "github.com/go-redis/redis"
+    global2 "github.com/joeyscat/ok-short/internal/global"
+    "github.com/joeyscat/ok-short/pkg/setting"
+    "github.com/stretchr/testify/assert"
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/mongo"
+    "reflect"
+    "testing"
 )
 
 func TestNewMongoDB(t *testing.T) {
@@ -49,7 +49,7 @@ func TestNewMongoDB(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := global.NewMongoDB(tt.args.s)
+			got, err := global2.NewMongoDB(tt.args.s)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewMongoDB() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -85,7 +85,7 @@ func TestNewRedis(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := global.NewRedis(tt.args.s); !reflect.DeepEqual(got, tt.want) {
+			if got := global2.NewRedis(tt.args.s); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewRedis() = %v, want %v", got, tt.want)
 			}
 		})
