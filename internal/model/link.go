@@ -1,12 +1,12 @@
 package model
 
 import (
-	"context"
-	"github.com/joeyscat/ok-short/global"
-	"github.com/qiniu/qmgo/field"
-	"github.com/qiniu/qmgo/options"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
+    "context"
+    global2 "github.com/joeyscat/ok-short/internal/global"
+    "github.com/qiniu/qmgo/field"
+    "github.com/qiniu/qmgo/options"
+    "go.mongodb.org/mongo-driver/bson"
+    "go.mongodb.org/mongo-driver/mongo"
 )
 
 type Link struct {
@@ -24,13 +24,13 @@ func CreateLink(sc string, originalURL string, exp uint32) (*Link, error) {
 		OriginURL: originalURL,
 		Exp:       exp,
 	}
-	_, err := global.MongoLinksColl.InsertOne(context.Background(), l)
+	_, err := global2.MongoLinksColl.InsertOne(context.Background(), l)
 	return l, err
 }
 
 func GetLinkDetailBySc(sc string) (l *Link, err error) {
 	l = &Link{}
-	err = global.MongoLinksColl.Find(context.Background(),
+	err = global2.MongoLinksColl.Find(context.Background(),
 		bson.M{"sc": sc}).One(l)
 	if err == mongo.ErrNilDocument {
 		return l, nil
@@ -41,7 +41,7 @@ func GetLinkDetailBySc(sc string) (l *Link, err error) {
 func GetLinkBySc(sc string) (link string, err error) {
 	l := &Link{}
 	// 覆盖索引
-	err = global.MongoLinksColl.Find(context.Background(),
+	err = global2.MongoLinksColl.Find(context.Background(),
 		bson.M{"sc": sc}).Select(bson.M{"_id": 0, "origin_url": 1}).One(l)
 	link = l.OriginURL
 
@@ -55,7 +55,7 @@ func GetLinkBySc(sc string) (link string, err error) {
 func GetLinkList(page, pageSize int64) (list []*Link, err error) {
 	list = []*Link{}
 
-	err = global.MongoLinksColl.Find(context.Background(),
+	err = global2.MongoLinksColl.Find(context.Background(),
 		bson.M{}).Skip(pageSize * page).Limit(pageSize).All(&list)
 	if err == mongo.ErrNilDocument {
 		return list, nil
@@ -65,7 +65,7 @@ func GetLinkList(page, pageSize int64) (list []*Link, err error) {
 }
 
 func CreateIndex() error {
-	return global.MongoLinksColl.CreateIndexes(
+	return global2.MongoLinksColl.CreateIndexes(
 		context.Background(),
 		[]options.IndexModel{{Key: []string{"sc", "origin_url"}}},
 	)

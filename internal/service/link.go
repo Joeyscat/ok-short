@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internal/model"
-	"github.com/joeyscat/ok-short/pkg/app"
+    global2 "github.com/joeyscat/ok-short/internal/global"
+    "github.com/joeyscat/ok-short/internal/model"
+    "github.com/joeyscat/ok-short/pkg/app"
 )
 
 const (
@@ -28,7 +28,7 @@ func (svc *Service) CreateLink(param *CreateLinkRequest) (string, error) {
 	// 生成ID，并进行62进制编码
 	id, err := genId()
 	sc := app.Base62Encode(id)
-	url := global.AppSetting.LinkPrefix + sc
+	url := global2.AppSetting.LinkPrefix + sc
 
 	//expiration := time.Minute * time.Duration(param.ExpirationInMinutes)
 	// TODO 定时清理过期数据
@@ -53,12 +53,12 @@ func (svc *Service) GetLinkList(pager *app.Pager) ([]*model.Link, error) {
 func genId() (int64, error) {
 	// TODO should lock #1 begin
 	// increase the global counter
-	err := global.Redis.Incr(URLIdKey).Err()
+	err := global2.Redis.Incr(URLIdKey).Err()
 	if err != nil {
 		return -1, err
 	}
 
 	// encode global counter to base62
-	return global.Redis.Get(URLIdKey).Int64()
+	return global2.Redis.Get(URLIdKey).Int64()
 	// TODO should lock #1 end
 }

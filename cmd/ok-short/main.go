@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/joeyscat/ok-short/global"
-	"github.com/joeyscat/ok-short/internal/routers/api/v2"
-	"github.com/joeyscat/ok-short/pkg/app"
+    "github.com/joeyscat/ok-short/internal/global"
+    "github.com/joeyscat/ok-short/internal/routers/api/v2"
+    "github.com/joeyscat/ok-short/pkg/app"
 )
 
 // @title 短链接服务
