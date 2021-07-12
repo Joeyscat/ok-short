@@ -1,11 +1,11 @@
 package model
 
 import (
-    "context"
-    global2 "github.com/joeyscat/ok-short/internal/global"
-    "github.com/qiniu/qmgo/field"
-    "go.mongodb.org/mongo-driver/bson"
-    "go.mongodb.org/mongo-driver/mongo"
+	"context"
+	"github.com/joeyscat/ok-short/internal/global"
+	"github.com/qiniu/qmgo/field"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type LinkTrace struct {
@@ -19,14 +19,14 @@ type LinkTrace struct {
 }
 
 func CreateLinkTrace(lt *LinkTrace) error {
-	_, err := global2.MongoLinksTraceColl.InsertOne(context.Background(), lt)
+	_, err := global.MongoLinksTraceColl.InsertOne(context.Background(), lt)
 	return err
 }
 
 func GetLinkTraceList(page, pageSize int64) (lt []*LinkTrace, err error) {
 	lt = []*LinkTrace{}
 
-	err = global2.MongoLinksTraceColl.Find(context.Background(),
+	err = global.MongoLinksTraceColl.Find(context.Background(),
 		nil).Skip(pageSize * page).Limit(pageSize).All(&lt)
 	if err == mongo.ErrNilDocument {
 		return lt, nil
@@ -37,7 +37,7 @@ func GetLinkTraceList(page, pageSize int64) (lt []*LinkTrace, err error) {
 func GetLinkTraceListBySc(sc string, page, pageSize int64) (lt []*LinkTrace, err error) {
 	lt = []*LinkTrace{}
 
-	err = global2.MongoLinksTraceColl.Find(context.Background(),
+	err = global.MongoLinksTraceColl.Find(context.Background(),
 		bson.M{"sc": sc}).Skip(pageSize * page).Limit(pageSize).All(&lt)
 	if err == mongo.ErrNilDocument {
 		return lt, nil

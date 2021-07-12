@@ -32,12 +32,12 @@ func (svc *Service) CreateLinkTrace(sc, url string, c echo.Context) error {
 	return model.CreateLinkTrace(lt)
 }
 
-// 获取某短链访问记录，返回一个LinkTrace数组
+// GetLinkTrace 获取某短链访问记录，返回一个LinkTrace数组
 func (svc *Service) GetLinkTrace(param *GetLinkTraceRequest, pager *app.Pager) ([]*model.LinkTrace, error) {
 	return model.GetLinkTraceListBySc(param.Sc, int64(pager.Page), int64(pager.PageSize))
 }
 
-// 获取多个短链访问记录
+// GetLinkTraceList 获取多个短链访问记录
 func (svc *Service) GetLinkTraceList(pager *app.Pager) ([]*model.LinkTrace, error) {
 	return model.GetLinkTraceList(int64(pager.Page), int64(pager.PageSize))
 }

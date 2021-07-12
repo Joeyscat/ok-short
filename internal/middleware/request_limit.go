@@ -1,11 +1,11 @@
 package middleware
 
 import (
-    global2 "github.com/joeyscat/ok-short/internal/global"
-    "github.com/joeyscat/ok-short/pkg/app"
-    "github.com/joeyscat/ok-short/pkg/errcode"
-    "github.com/labstack/echo/v4"
-    "time"
+	"github.com/joeyscat/ok-short/internal/global"
+	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/joeyscat/ok-short/pkg/errcode"
+	"github.com/labstack/echo/v4"
+	"time"
 )
 
 // 请求限制：
@@ -14,10 +14,10 @@ import (
 func RequestLimit(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		key := "req:times:" + c.RealIP()
-		_, err := global2.Redis.Get(key).Result()
+		_, err := global.Redis.Get(key).Result()
 
 		if err != nil {
-			global2.Redis.Set(key, true, time.Millisecond*global2.AppSetting.RequestLimit)
+			global.Redis.Set(key, true, time.Millisecond*global.AppSetting.RequestLimit)
 			if err := next(c); err != nil {
 				c.Error(err)
 			}

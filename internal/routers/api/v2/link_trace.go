@@ -1,11 +1,11 @@
 package v2
 
 import (
-    global2 "github.com/joeyscat/ok-short/internal/global"
-    "github.com/joeyscat/ok-short/internal/service"
-    "github.com/joeyscat/ok-short/pkg/app"
-    "github.com/joeyscat/ok-short/pkg/errcode"
-    "github.com/labstack/echo/v4"
+	"github.com/joeyscat/ok-short/internal/global"
+	"github.com/joeyscat/ok-short/internal/service"
+	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/joeyscat/ok-short/pkg/errcode"
+	"github.com/labstack/echo/v4"
 )
 
 type LinkTrace struct{}
@@ -20,7 +20,7 @@ func (t LinkTrace) Get(c echo.Context) error {
 	response := app.NewResponse(c)
 	valid, errs := app.BindAndValid(c, &param)
 	if !valid {
-		global2.Logger.Errorf(c.Request().Context(), "app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(c.Request().Context(), "app.BindAndValid errs: %v", errs)
 		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 	}
 
@@ -28,7 +28,7 @@ func (t LinkTrace) Get(c echo.Context) error {
 	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
 	traces, err := svc.GetLinkTrace(&param, &pager)
 	if err != nil {
-		global2.Logger.Errorf(c.Request().Context(), "svc.GetLinkTrace err: %v", err)
+		global.Logger.Errorf(c.Request().Context(), "svc.GetLinkTrace err: %v", err)
 		return response.ToErrorResponse(errcode.ErrorGetLinkTraceFail)
 	}
 
@@ -42,7 +42,7 @@ func (t LinkTrace) List(c echo.Context) error {
 	pager := app.Pager{Page: app.GetPage(c), PageSize: app.GetPageSize(c)}
 	link, err := svc.GetLinkTraceList(&pager)
 	if err != nil {
-		global2.Logger.Errorf(c.Request().Context(), "svc.GetLinkList err: %v", err)
+		global.Logger.Errorf(c.Request().Context(), "svc.GetLinkList err: %v", err)
 		return response.ToErrorResponse(errcode.ErrorGetLinkListFail)
 	}
 

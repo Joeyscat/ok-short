@@ -1,19 +1,19 @@
 package v2
 
 import (
-    global2 "github.com/joeyscat/ok-short/internal/global"
-    "net/http"
+	"github.com/joeyscat/ok-short/internal/global"
+	"net/http"
 
-    _ "github.com/joeyscat/ok-short/docs"
-    "github.com/labstack/echo/v4"
-    "github.com/labstack/echo/v4/middleware"
+	_ "github.com/joeyscat/ok-short/docs"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func NewRouter() *echo.Echo {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	allowOrigins := global2.AppSetting.AllowOrigins
+	allowOrigins := global.AppSetting.AllowOrigins
 	if allowOrigins == nil || len(allowOrigins) == 0 {
 		panic("allowOrigins should not be empty")
 	}

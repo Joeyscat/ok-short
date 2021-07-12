@@ -1,12 +1,12 @@
 package v2
 
 import (
-    global2 "github.com/joeyscat/ok-short/internal/global"
-    "github.com/joeyscat/ok-short/internal/service"
-    "github.com/joeyscat/ok-short/pkg/app"
-    "github.com/joeyscat/ok-short/pkg/errcode"
-    "github.com/labstack/echo/v4"
-    "net/http"
+	"github.com/joeyscat/ok-short/internal/global"
+	"github.com/joeyscat/ok-short/internal/service"
+	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/joeyscat/ok-short/pkg/errcode"
+	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type Link struct{}
@@ -20,14 +20,14 @@ func (t Link) Shorten(e echo.Context) error {
 	response := app.NewResponse(e)
 	valid, errs := app.BindAndValid(e, &param)
 	if !valid {
-		global2.Logger.Errorf(e.Request().Context(), "app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(e.Request().Context(), "app.BindAndValid errs: %v", errs)
 		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 	}
 
 	svc := service.New(e.Request().Context())
 	link, err := svc.CreateLink(&param)
 	if err != nil {
-		global2.Logger.Errorf(e.Request().Context(), "svc.CreateLink err: %v", err)
+		global.Logger.Errorf(e.Request().Context(), "svc.CreateLink err: %v", err)
 		return response.ToErrorResponse(errcode.ErrorCreateLinkFail)
 	}
 
@@ -40,14 +40,14 @@ func (t Link) Redirect(e echo.Context) error {
 	valid, errs := app.BindAndValid(e, &param)
 	response := app.NewResponse(e)
 	if !valid {
-		global2.Logger.Errorf(e.Request().Context(), "app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(e.Request().Context(), "app.BindAndValid errs: %v", errs)
 		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 	}
 
 	svc := service.New(e.Request().Context())
 	link, err := svc.UnShorten(&param)
 	if err != nil {
-		global2.Logger.Errorf(e.Request().Context(), "svc.UnShorten err: %v", err)
+		global.Logger.Errorf(e.Request().Context(), "svc.UnShorten err: %v", err)
 		return response.ToErrorResponse(errcode.ErrorUnShortLinkFail)
 	}
 	if link == "" {
@@ -58,7 +58,7 @@ func (t Link) Redirect(e echo.Context) error {
 	go func() {
 		err = svc.CreateLinkTrace(sc, link, e)
 		if err != nil {
-			global2.Logger.Errorf(e.Request().Context(), "svc.CreateLinkTrace err: %v", err)
+			global.Logger.Errorf(e.Request().Context(), "svc.CreateLinkTrace err: %v", err)
 		}
 	}()
 
@@ -71,14 +71,14 @@ func (t Link) Get(e echo.Context) error {
 	response := app.NewResponse(e)
 	valid, errs := app.BindAndValid(e, &param)
 	if !valid {
-		global2.Logger.Errorf(e.Request().Context(), "app.BindAndValid errs: %v", errs)
+		global.Logger.Errorf(e.Request().Context(), "app.BindAndValid errs: %v", errs)
 		return response.ToErrorResponse(errcode.InvalidParams.WithDetails(errs.Errors()...))
 	}
 
 	svc := service.New(e.Request().Context())
 	link, err := svc.GetLink(&param)
 	if err != nil {
-		global2.Logger.Errorf(e.Request().Context(), "svc.GetLink err: %v", err)
+		global.Logger.Errorf(e.Request().Context(), "svc.GetLink err: %v", err)
 		return response.ToErrorResponse(errcode.ErrorGetLinkFail)
 	}
 
@@ -92,7 +92,7 @@ func (t Link) List(e echo.Context) error {
 	pager := app.Pager{Page: app.GetPage(e), PageSize: app.GetPageSize(e)}
 	link, err := svc.GetLinkList(&pager)
 	if err != nil {
-		global2.Logger.Errorf(e.Request().Context(), "svc.GetLinkList err: %v", err)
+		global.Logger.Errorf(e.Request().Context(), "svc.GetLinkList err: %v", err)
 		return response.ToErrorResponse(errcode.ErrorGetLinkListFail)
 	}
 
