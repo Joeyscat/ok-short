@@ -1,27 +1,27 @@
 package service
 
 import (
-    "context"
-    global2 "github.com/joeyscat/ok-short/internal/global"
-    "github.com/joeyscat/ok-short/internal/model"
-    "github.com/joeyscat/ok-short/pkg/app"
-    "github.com/spf13/viper"
-    "github.com/stretchr/testify/assert"
-    "testing"
+	"context"
+	"github.com/joeyscat/ok-short/internal/global"
+	"github.com/joeyscat/ok-short/internal/model"
+	"github.com/joeyscat/ok-short/pkg/app"
+	"github.com/spf13/viper"
+	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 // 准备测试环境
 func setup() {
-	viper.AddConfigPath("D:\\dev\\code\\go\\ok-short\\configs\\")
-	err := global2.SetupSetting()
+	viper.AddConfigPath("D:\\code\\go\\ok-short\\")
+	err := global.SetupSetting()
 	if err != nil {
 		panic(err)
 	}
-	err = global2.SetupRedis()
+	err = global.SetupRedis()
 	if err != nil {
 		panic(err)
 	}
-	err = global2.SetupMongoDB()
+	err = global.SetupMongoDB()
 	if err != nil {
 		panic(err)
 	}
