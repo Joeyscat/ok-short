@@ -10,6 +10,12 @@ var (
 	maxPageSize      = 40
 )
 
+type Pager struct {
+	Page      int `json:"page"`
+	PageSize  int `json:"page_size"`
+	TotalRows int `json:"total_rows"`
+}
+
 func GetPage(c echo.Context) int {
 	page := convert.StrTo(c.QueryParam("page")).MustInt()
 	if page <= 0 {

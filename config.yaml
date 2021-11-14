@@ -13,13 +13,12 @@ App:
   NotFoundPage: http://oook.fun/404
   AllowOrigins:
     - http://localhost:8000
+
 MongoDB:
-  User: ok-short_rw
-  Password: 123456
-  AuthDB: db_ok_short
-  Addr:
-    192.168.50.119:27017
+  URI: mongodb://ok-short:123456@app.io:27017/ok-short
+  DB: db_ok_short
+
 Redis:
-  Addr: 192.168.50.119:6379
-  Password: ""
+  Addr: app.io:6379
+  Password: "123456"
   DB: 0

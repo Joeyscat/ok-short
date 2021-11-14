@@ -1,30 +1,72 @@
-package v2
+package internal
 
 import (
-	"github.com/joeyscat/ok-short/internal/global"
+	"context"
 	"net/http"
+	"time"
+
+	v1 "github.com/joeyscat/ok-short/internal/controller/v1"
+	"github.com/joeyscat/ok-short/internal/global"
+	"github.com/joeyscat/ok-short/internal/store"
+	"github.com/joeyscat/ok-short/internal/store/mongo"
+	"github.com/joeyscat/ok-short/pkg/app"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	_ "github.com/joeyscat/ok-short/docs"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter() *echo.Echo {
+type Server struct {
+	echo *echo.Echo
+}
+
+func NewServer() Server {
+
+	// 初始化数据库连接
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*3)
+	defer cancel()
+	mongoStore, err := mongo.GetMongoFactoryOr(ctx, options.Client().ApplyURI(global.MongoDBSetting.URI))
+	if err != nil {
+		panic(err)
+	}
+
+	// 初始化路由
 	e := echo.New()
+
+	installMiddlewares(e)
+
+	installRouters(e, mongoStore)
+
+	return Server{echo: e}
+}
+
+func (s *Server) Start() error {
+
+	return s.echo.Start(":" + global.AppSetting.HttpPort)
+}
+
+func installMiddlewares(e *echo.Echo) {
+	e.Validator = app.NewValidator()
+
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
 	allowOrigins := global.AppSetting.AllowOrigins
-	if allowOrigins == nil || len(allowOrigins) == 0 {
+	if len(allowOrigins) == 0 {
 		panic("allowOrigins should not be empty")
 	}
+
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: allowOrigins,
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
+}
 
+func installRouters(e *echo.Echo, factory store.Factory) {
 	apiV2 := e.Group("/api/v2")
-	link := NewLink()
-	linkTrace := NewLinkTrace()
+	link := v1.NewLinkController(factory)
+	linkTrace := v1.NewLinkTraceController(factory)
 	e.GET("/:sc", link.Redirect)
 	{
 		// 创建短链接
@@ -35,8 +77,6 @@ func NewRouter() *echo.Echo {
 		apiV2.GET("/link-trace/:sc", linkTrace.Get)
 		apiV2.GET("/link-trace", linkTrace.List)
 	}
-
-	return e
 }
 
 // 用于接受Token的Header
