@@ -19,6 +19,6 @@ MongoDB:
   DB: db_ok_short
 
 Redis:
-  Addr: 192.168.50.119:6379
-  Password: ""
+  Addr: app.io:6379
+  Password: "123456"
   DB: 0

@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/joeyscat/ok-short/internal/global"
 	"github.com/joeyscat/ok-short/pkg/app"
 	"github.com/joeyscat/ok-short/pkg/errcode"
 	"github.com/labstack/echo/v4"
-	"time"
 )
 
 // 请求限制：
@@ -24,6 +25,6 @@ func RequestLimit(next echo.HandlerFunc) echo.HandlerFunc {
 			return nil
 		}
 
-		return app.NewResponse(c).ToErrorResponse(errcode.TooManyRequests)
+		return app.ErrorResponse(c, errcode.TooManyRequests)
 	}
 }
