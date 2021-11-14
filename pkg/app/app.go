@@ -1,9 +1,10 @@
 package app
 
 import (
+	"net/http"
+
 	"github.com/joeyscat/ok-short/pkg/errcode"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 type Response struct {
@@ -41,8 +42,8 @@ func (r *Response) ToResponseList(list interface{}, totalRows int) error {
 }
 
 func (r *Response) ToErrorResponse(err *errcode.Error) error {
-	response := map[string]interface{}{"code": err.Code(), "msg": err.Msg()}
-	details := err.Details()
+	response := map[string]interface{}{"code": err.Code, "msg": err.Msg}
+	details := err.Details
 	if len(details) > 0 {
 		response["details"] = details
 	}

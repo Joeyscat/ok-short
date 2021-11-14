@@ -3,13 +3,14 @@ package global
 import (
 	"errors"
 	"fmt"
-	"github.com/joeyscat/ok-short/pkg/logger"
-	"github.com/joeyscat/ok-short/pkg/setting"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"log"
 	"os"
 	"time"
+
+	"github.com/joeyscat/ok-short/pkg/logger"
+	"github.com/joeyscat/ok-short/pkg/setting"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 func InitEnv() {
@@ -98,7 +99,7 @@ func SetupMongoDB() error {
 	if err != nil {
 		return err
 	}
-	MongoOkShortDB = mongoDB.Database(MongoDBSetting.AuthDB)
+	MongoOkShortDB = mongoDB.Database(MongoDBSetting.DB)
 	MongoLinksColl = MongoOkShortDB.Collection("links")
 	MongoLinksTraceColl = MongoOkShortDB.Collection("links_traces")
 	MongoAuthsColl = MongoOkShortDB.Collection("auths")

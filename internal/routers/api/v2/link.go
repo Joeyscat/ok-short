@@ -1,12 +1,13 @@
 package v2
 
 import (
+	"net/http"
+
 	"github.com/joeyscat/ok-short/internal/global"
 	"github.com/joeyscat/ok-short/internal/service"
 	"github.com/joeyscat/ok-short/pkg/app"
 	"github.com/joeyscat/ok-short/pkg/errcode"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 type Link struct{}
@@ -31,7 +32,7 @@ func (t Link) Shorten(e echo.Context) error {
 		return response.ToErrorResponse(errcode.ErrorCreateLinkFail)
 	}
 
-	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code()})
+	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code})
 }
 
 func (t Link) Redirect(e echo.Context) error {
@@ -82,7 +83,7 @@ func (t Link) Get(e echo.Context) error {
 		return response.ToErrorResponse(errcode.ErrorGetLinkFail)
 	}
 
-	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code()})
+	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code})
 }
 
 func (t Link) List(e echo.Context) error {
@@ -96,5 +97,5 @@ func (t Link) List(e echo.Context) error {
 		return response.ToErrorResponse(errcode.ErrorGetLinkListFail)
 	}
 
-	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code()})
+	return response.ToResponse(map[string]interface{}{"link": link, "code": errcode.Success.Code})
 }

@@ -27,10 +27,8 @@ type AppSettingS struct {
 }
 
 type MongoDBSettingS struct {
-	Addr     []string
-	User     string
-	Password string
-	AuthDB   string
+	URI string
+	DB  string
 }
 
 type RedisSettingS struct {

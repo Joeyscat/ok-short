@@ -3,10 +3,10 @@ package global
 import (
 	"context"
 	"fmt"
+
 	"github.com/go-redis/redis"
 	"github.com/joeyscat/ok-short/pkg/setting"
 	"github.com/qiniu/qmgo"
-	"strings"
 )
 
 var (
@@ -28,12 +28,7 @@ func NewRedis(s *setting.RedisSettingS) *redis.Client {
 }
 
 func NewMongoDB(s *setting.MongoDBSettingS) (*qmgo.Client, error) {
-	instances := strings.Join(s.Addr, ",")
-	auth := ""
-	if s.User != "" && s.Password != "" {
-		auth = fmt.Sprintf("%s:%s@", s.User, s.Password)
-	}
-	uri := fmt.Sprintf("mongodb://%s%s/%s", auth, instances, s.AuthDB)
+	uri := s.URI
 	fmt.Println(uri)
 
 	ctx := context.Background()

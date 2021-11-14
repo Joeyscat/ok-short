@@ -1,13 +1,18 @@
 package model
 
 import (
+	"reflect"
+	"testing"
+
 	"github.com/go-redis/redis"
 	"github.com/joeyscat/ok-short/internal/global"
 	"github.com/joeyscat/ok-short/pkg/setting"
 	"github.com/stretchr/testify/assert"
 	"go.mongodb.org/mongo-driver/mongo"
-	"reflect"
-	"testing"
+)
+
+const (
+	TEST_MONGODB_URI = "mongodb://ok-short_rw:123456@192.168.50.119:27017/db_ok_short"
 )
 
 func TestNewMongoDB(t *testing.T) {
@@ -24,10 +29,8 @@ func TestNewMongoDB(t *testing.T) {
 			name: "test_1",
 			args: args{
 				s: &setting.MongoDBSettingS{
-					Addr:     []string{"192.168.50.119:27017"},
-					User:     "ok-short_rw",
-					Password: "123456",
-					AuthDB:   "db_ok_short",
+					URI: TEST_MONGODB_URI,
+					DB:  "db_ok_short",
 				},
 			},
 			want:    nil,
